@@ -1,4 +1,13 @@
 source 'https://rubygems.org'
 
-# Specify your gem's dependencies in solidus_reserved_stock.gemspec
 gemspec
+
+gem 'solidus', github: 'solidusio/solidus', branch: 'v1.0'
+
+if ENV['DB'] == 'mysql'
+  gem 'mysql2', '~> 0.3.20'
+elsif ENV['DB'] == 'postgres'
+  gem 'pg'
+else
+  gem 'sqlite3', '~> 1.3.10'
+end

@@ -1,10 +1,26 @@
 require "bundler/gem_tasks"
-require "rake/testtask"
+require 'rubygems'
+require 'rake'
+require 'rake/testtask'
+require 'rake/packagetask'
+require 'rubygems/package_task'
+require 'rspec/core/rake_task'
+require 'spree/testing_support/common_rake'
+require 'solidus_reserved_stock'
 
-Rake::TestTask.new(:test) do |t|
-  t.libs << "test"
-  t.libs << "lib"
-  t.test_files = FileList['test/**/*_test.rb']
+Bundler::GemHelper.install_tasks
+RSpec::Core::RakeTask.new
+
+task default: :spec
+
+spec = eval(File.read('solidus_reserved_stock.gemspec'))
+
+Gem::PackageTask.new(spec) do |p|
+  p.gem_spec = spec
 end
 
-task :default => :test
+desc 'Generates a dummy app for testing'
+task :test_app do
+  ENV['LIB_NAME'] = 'solidus_reserved_stock'
+  Rake::Task['common:test_app'].invoke
+end
