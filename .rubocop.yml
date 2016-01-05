@@ -6,6 +6,7 @@ AllCops:
     - 'vendor/**/*'
     - 'spec/fixtures/**/*'
     - 'spec/dummy/**/*'
+    - 'bin/**/*'
   RunRailsCops: true
 
 Style/StringLiterals:

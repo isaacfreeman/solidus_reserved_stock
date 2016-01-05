@@ -6,7 +6,8 @@ ENV["RAILS_ENV"] ||= "test"
 begin
   require File.expand_path("../dummy/config/environment", __FILE__)
 rescue LoadError
-  puts "Could not load dummy application. Please ensure you have run `bundle exec rake test_app`"
+  puts "Could not load dummy application."\
+    "Please ensure you have run `bundle exec rake test_app`"
   exit
 end
 
@@ -30,4 +31,6 @@ RSpec.configure do |config|
   end
 end
 
-Dir[File.join(File.dirname(__FILE__), '/support/**/*.rb')].each { |file| require file }
+Dir[File.join(File.dirname(__FILE__), "/support/**/*.rb")].each do |file|
+  require file
+end

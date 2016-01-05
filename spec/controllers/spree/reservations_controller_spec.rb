@@ -1,6 +1,6 @@
-require 'spec_helper'
+require "spec_helper"
 
-describe Spree::ReservationsController, :type => :controller do
+describe Spree::ReservationsController, type: :controller do
   let(:user) { create(:user) }
 
   context "#create" do
