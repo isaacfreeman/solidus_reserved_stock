@@ -5,6 +5,7 @@ AllCops:
   Exclude:
     - 'vendor/**/*'
     - 'spec/fixtures/**/*'
+    - 'spec/dummy/**/*'
   RunRailsCops: true
 
 Style/StringLiterals:

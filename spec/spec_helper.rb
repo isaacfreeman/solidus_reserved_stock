@@ -1,18 +1,20 @@
-require 'simplecov'
-SimpleCov.start 'rails'
+require "simplecov"
+SimpleCov.start "rails"
 
-ENV['RAILS_ENV'] ||= 'test'
+ENV["RAILS_ENV"] ||= "test"
 
 begin
-  require File.expand_path('../dummy/config/environment', __FILE__)
+  require File.expand_path("../dummy/config/environment", __FILE__)
 rescue LoadError
-  puts 'Could not load dummy application. Please ensure you have run `bundle exec rake test_app`'
+  puts "Could not load dummy application. Please ensure you have run `bundle exec rake test_app`"
   exit
 end
 
-require 'pry'
-require 'ffaker'
-require 'rspec/rails'
+require "pry"
+require "ffaker"
+require "rspec/rails"
+require "factory_girl_rails"
+require "spree/testing_support/factories"
 
 RSpec.configure do |config|
   config.fail_fast = false
@@ -21,7 +23,7 @@ RSpec.configure do |config|
   config.mock_with :rspec
   config.raise_errors_for_deprecations!
   config.run_all_when_everything_filtered = true
-  config.use_transactional_fixtures = false
+  config.use_transactional_fixtures = true
 
   config.expect_with :rspec do |expectations|
     expectations.syntax = :expect

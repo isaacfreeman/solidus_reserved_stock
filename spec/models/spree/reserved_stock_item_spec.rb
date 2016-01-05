@@ -1,7 +1,12 @@
-require 'spec_helper'
+require "spec_helper"
 
 # Specs ReservedStockItem subclass to StockItem
 describe Spree::ReservedStockItem, type: :model do
+  context "validation" do
+    it "is valid if its stock_location is for reserved_items"
+    it "is invalid if its stock_location is not for reserved_items"
+  end
+
   it "belongs to a user"
   it "has an expiry date"
   it "remembers the stock location where stock was reserved"
