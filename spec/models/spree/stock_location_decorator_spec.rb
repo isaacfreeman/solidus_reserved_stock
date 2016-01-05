@@ -7,7 +7,7 @@ describe Spree::StockLocation, type: :model do
 
   it "has a class method to return the canonical reserved stock location"
   it "creates reserved stock location if not present"
-  it "accepts only ReservedStockItems"
+  it "accepts only ReservedStockItems if it is the reserved location"
 
   # TODO: StockLocation probably isn't the right place for this. I guess we need
   #       a prioritizer?
