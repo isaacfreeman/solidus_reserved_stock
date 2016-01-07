@@ -4,12 +4,11 @@ require "spec_helper"
 describe Spree::StockLocation, type: :model do
   subject do
     create(
-      :stock_location_with_items,
+      :stock_location,
       backorderable_default: true,
       reserved_items: true
     )
   end
-  let(:stock_item) { subject.stock_items.order(:id).first }
 
   context ".reserved_items_location" do
     it "can return the existing reserved stock location" do
@@ -22,6 +21,8 @@ describe Spree::StockLocation, type: :model do
       expect(reserved_items_location.reserved_items?).to be true
     end
   end
+
+  # TODO: must have propagate_all_variants be false if reserved_items
 
   # TODO: StockLocation probably isn't the right place for this. I guess we need
   #       a prioritizer?
