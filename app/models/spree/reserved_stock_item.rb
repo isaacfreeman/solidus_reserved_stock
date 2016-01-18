@@ -15,17 +15,24 @@ module Spree
 
     belongs_to :user, class_name: Spree::UserClassHandle.new
 
-    # Remove 'variant_id' attribute from it's existing uniqueness validator (effectively
-    # disabling it) so we can add a new uniqueness validator that is scoped to
-    # user_id. We want multiple users to be able to reserve the same variant.
-    # TODO: Spec to ensure that the parent class StockItem still validates as normal
+    # Remove 'variant_id' attribute from its existing uniqueness validator
+    # (effectively disabling it) so we can add a new uniqueness validator that
+    # is scoped to user_id. We want multiple users to be able to reserve the
+    # same variant.
+    # TODO: Spec to ensure that the parent class StockItem still validates as
+    # normal
     variant_id_uniqueness_validator = validators_on(:variant_id).detect do |validator|
       validator.is_a? ActiveRecord::Validations::UniquenessValidator
     end
     variant_id_uniqueness_validator.attributes.delete(:variant_id) if variant_id_uniqueness_validator
 
     validates_with ReservedStockLocationValidator
-    validates_uniqueness_of :variant_id, scope: [:stock_location_id, :deleted_at, :user_id]
+    validates_uniqueness_of :variant_id,
+      scope: [
+        :stock_location_id,
+        :deleted_at,
+        :user_id
+      ]
     validates :user_id, presence: true
   end
 end

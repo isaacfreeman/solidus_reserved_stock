@@ -10,7 +10,8 @@ Spree::StockLocation.class_eval do
     return reserved_items.first if reserved_items.any?
     Spree::StockLocation.create(
       name: "Reserved Items",
-      reserved_items: true
+      reserved_items: true,
+      propagate_all_variants: false
     )
   end
 end
