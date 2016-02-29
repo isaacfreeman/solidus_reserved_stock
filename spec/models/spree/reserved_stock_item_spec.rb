@@ -14,6 +14,7 @@ describe Spree::ReservedStockItem, type: :model do
   subject do
     create(
       :reserved_stock_item,
+      variant: FactoryGirl.create(:variant),
       stock_location: reserved_stock_location,
       user: user
     )
