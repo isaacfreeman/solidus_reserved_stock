@@ -19,18 +19,22 @@ module Spree
       original_stock_location.unstock(variant, quantity)
     end
 
+    # TODO: Use stock transfers
     def restock(variant, user, quantity=nil)
-      # stock_item = @reserved_stock_location.stock_item(variant, user)
-      # original_stock_location = stock_item.orginal_stock_location
-      # quantity ||= stock_item.count_on_hand
-      original_stock_location.move(variant, quantity, @reserved_stock_location)
+      reserved_stock_item = user.reserved_stock_item(variant)
+      quantity ||= reserved_stock_item.count_on_hand
+      @reserved_stock_location.unstock(variant, quantity)
+      reserved_stock_item.original_stock_location.move(variant, quantity)
     end
 
+    # TODO: This inefficiently requires restock to find the stock item again
     def restock_expired
-      @reserved_stock_location.stock_items.expired.each do |stock_item|
-        restock(stock_item)
+      @reserved_stock_location.expired_stock_items.each do |reserved_stock_item|
+        variant = reserved_stock_item.variant
+        quantity = reserved_stock_item.count_on_hand
+        @reserved_stock_location.unstock(variant, quantity)
+        reserved_stock_item.original_stock_location.move(variant, quantity)
       end
     end
-
   end
 end
