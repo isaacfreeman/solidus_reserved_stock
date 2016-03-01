@@ -12,7 +12,6 @@ Spree.user_class.class_eval do
       .first
   end
 
-  # TODO: Give it an original_stock_item instead of a variant and user?
   def reserved_stock_item_or_create(variant, original_stock_location)
     return unless reserved_stock_location
     reserved_stock_item(variant) || Spree::ReservedStockItem.create!(

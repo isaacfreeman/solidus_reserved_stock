@@ -27,13 +27,4 @@ describe Spree::StockLocation, type: :model do
   # TODO: StockLocation probably isn't the right place for this. I guess we need
   #       a prioritizer?
   it "is used before other stock locations when processing an order"
-
-  context "#count_on_hand" do
-    context "if reserved_items is true" do
-      it "returns count on hand for a given variant and user"
-    end
-    context "if reserved_items is false" do
-      it "doesn't accept a user argument"
-    end
-  end
 end
