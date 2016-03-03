@@ -1,5 +1,5 @@
 class AddUserIdToSpreeStockItems < ActiveRecord::Migration
   def change
-    add_column :spree_stock_items, :user_id, :association
+    add_reference :spree_stock_items, :user, index: true
   end
 end

@@ -3,6 +3,7 @@ module Spree
     class ReservedStockItemsController < Spree::Api::BaseController
       before_action :authorize_reserving_stock
 
+      # TODO: Find variant by SKU
       def reserve
         @reserved_stock_item = Spree::StockReserver.new.reserve(
           params[:variant],

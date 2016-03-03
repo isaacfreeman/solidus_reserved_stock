@@ -9,6 +9,8 @@ module Spree
     # TODO: WHat if quantity is negative?
     # TODO: Use stock transfers.
     # TODO: Figure out how on earth stock transfers are supposed to work
+    # TODO: Make stock_location optional, and if not present use stock_locations as for add-to-cart
+    # TODO: Find variant by SKU
     def reserve(variant, original_stock_location, user, quantity, expires_at=nil)
       # if quantity < 1 && !stock_item(variant)
       #   raise InvalidMovementError.new(Spree.t(:negative_movement_absent_item))
