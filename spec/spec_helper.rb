@@ -13,11 +13,19 @@ rescue LoadError
   exit
 end
 
+require "rspec/rails"
+
+# Requires supporting ruby files with custom matchers and macros, etc,
+# in spec/support/ and its subdirectories.
+Dir[File.dirname(__FILE__) + "/support/**/*.rb"].each {|f| require f}
 require "pry"
 require "ffaker"
-require "rspec/rails"
 require "factory_girl_rails"
 require "spree/testing_support/factories"
+require 'spree/testing_support/preferences'
+require "spree/api/testing_support/helpers"
+require "spree/api/testing_support/setup"
+require 'rspec/active_model/mocks'
 
 RSpec.configure do |config|
   config.fail_fast = false
@@ -27,9 +35,19 @@ RSpec.configure do |config|
   config.raise_errors_for_deprecations!
   config.run_all_when_everything_filtered = true
   config.use_transactional_fixtures = true
+  config.include FactoryGirl::Syntax::Methods
+  config.include Spree::Api::TestingSupport::Helpers, type: :controller
+  config.extend Spree::Api::TestingSupport::Setup, type: :controller
+  config.include Spree::TestingSupport::Preferences
 
   config.expect_with :rspec do |expectations|
     expectations.syntax = :expect
+  end
+
+  config.before(:each) do
+    Rails.cache.clear
+    reset_spree_preferences
+    Spree::Api::Config[:requires_authentication] = true
   end
 end
 

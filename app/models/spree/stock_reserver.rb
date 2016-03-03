@@ -9,14 +9,14 @@ module Spree
     # TODO: WHat if quantity is negative?
     # TODO: Use stock transfers.
     # TODO: Figure out how on earth stock transfers are supposed to work
-    def reserve(variant, original_stock_location, user, quantity)
+    def reserve(variant, original_stock_location, user, quantity, expires_at=nil)
       # if quantity < 1 && !stock_item(variant)
       #   raise InvalidMovementError.new(Spree.t(:negative_movement_absent_item))
       # end
-      user.reserved_stock_item_or_create(variant, original_stock_location)
-        .stock_movements
-        .create!(quantity: quantity)
+      reserved_stock_item = user.reserved_stock_item_or_create(variant, original_stock_location, expires_at)
+      reserved_stock_item.stock_movements.create!(quantity: quantity)
       original_stock_location.unstock(variant, quantity)
+      reserved_stock_item
     end
 
     # TODO: Use stock transfers
@@ -25,6 +25,7 @@ module Spree
       quantity ||= reserved_stock_item.count_on_hand
       @reserved_stock_location.unstock(variant, quantity)
       reserved_stock_item.original_stock_location.move(variant, quantity)
+      reserved_stock_item.reload
     end
 
     # TODO: This inefficiently requires restock to find the stock item again

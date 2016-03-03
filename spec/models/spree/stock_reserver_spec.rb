@@ -6,16 +6,6 @@ describe Spree::StockReserver, type: :model do
   let(:original_stock_location) { create(:stock_location) }
   let(:variant) { create(:variant) }
   let(:reserved_stock_location) { Spree::StockLocation.reserved_items_location }
-  let(:expired_reserved_stock_item) do
-    create(
-      :reserved_stock_item,
-      variant: variant,
-      stock_location: reserved_stock_location,
-      original_stock_location: original_stock_location,
-      user: user,
-      expires_at: 1.day.ago
-    )
-  end
   let(:reserved_stock_item) do
     create(
       :reserved_stock_item,
@@ -24,6 +14,16 @@ describe Spree::StockReserver, type: :model do
       original_stock_location: original_stock_location,
       user: user,
       expires_at: 1.day.from_now
+    )
+  end
+  let(:expired_reserved_stock_item) do
+    create(
+      :reserved_stock_item,
+      variant: variant,
+      stock_location: reserved_stock_location,
+      original_stock_location: original_stock_location,
+      user: user,
+      expires_at: 1.day.ago
     )
   end
 

@@ -47,5 +47,6 @@ describe Spree.user_class, type: :model do
       subject.reserved_stock_item_or_create(variant, original_stock_location)
       expect(subject.reserved_stock_item(variant)).not_to be_nil
     end
+    it "handles expires_at"
   end
 end

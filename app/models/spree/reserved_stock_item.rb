@@ -1,6 +1,7 @@
 # Validates that the StockLocation is specifically for reserved stock
 class ReservedStockLocationValidator < ActiveModel::Validator
   def validate(record)
+    return unless record.stock_location # Missing stock location shouldbe caught by other validator
     return if record.stock_location.reserved_items?
     record.errors[:name] << "StockLocation for ReservedStockItems must have reserved_items? == true"
   end
