@@ -49,4 +49,8 @@ describe Spree.user_class, type: :model do
     end
     it "handles expires_at"
   end
+
+  it "can restock all reserved items"
+  it "restocks all reserved items when account is deleted"
+
 end
