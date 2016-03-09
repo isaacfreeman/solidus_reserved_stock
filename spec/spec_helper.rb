@@ -22,7 +22,7 @@ require "pry"
 require "ffaker"
 require "factory_girl_rails"
 require "spree/testing_support/factories"
-require 'spree/testing_support/preferences'
+require "spree/testing_support/preferences"
 require "spree/api/testing_support/helpers"
 require "spree/api/testing_support/setup"
 require 'rspec/active_model/mocks'
@@ -47,7 +47,7 @@ RSpec.configure do |config|
   config.before(:each) do
     Rails.cache.clear
     reset_spree_preferences
-    Spree::Api::Config[:requires_authentication] = true
+    Spree::Api::Config.requires_authentication = true
   end
 end
 

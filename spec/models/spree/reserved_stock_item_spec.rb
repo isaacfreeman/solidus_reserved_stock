@@ -9,7 +9,7 @@ describe Spree::ReservedStockItem, type: :model do
       propagate_all_variants: false
     )
   end
-  let (:user) { create(:user) }
+  let(:user) { create(:user) }
   # TODO: specify variant here for clarity
   subject do
     create(
@@ -68,5 +68,17 @@ describe Spree::ReservedStockItem, type: :model do
       end
     end
   end
-
+  context "DB constraints" do
+    it "can save two items with same variant but different user" do
+      different_user = create(:user)
+      reserved_stock_item = build(
+        :reserved_stock_item,
+        stock_location: reserved_stock_location,
+        variant: subject.variant,
+        user: different_user
+      )
+      reserved_stock_item.save
+      expect(Spree::ReservedStockItem.count).to eq 2
+    end
+  end
 end

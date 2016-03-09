@@ -21,7 +21,9 @@ Gem::Specification.new do |s|
 
   s.has_rdoc = false
 
-  s.add_runtime_dependency "solidus_core", "~> 1.0"
+  s.add_runtime_dependency "solidus_core", "~> 1.2.2"
+  s.add_runtime_dependency "solidus_api", "~> 1.2.2"
+  s.add_runtime_dependency "solidus_backend", "~> 1.2.2"
 
   s.add_development_dependency "byebug"
   s.add_development_dependency "capybara", "~> 2.4.4"
