@@ -1,4 +1,6 @@
 Spree.user_class.class_eval do
+  has_many :reserved_stock_items
+
   def reserved_count_on_hand(variant)
     reserved_stock_item(variant).try(:count_on_hand)
   end

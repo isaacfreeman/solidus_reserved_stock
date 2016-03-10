@@ -1,0 +1,78 @@
+<% content_for :page_title do %>
+  <%= link_to "#{Spree.t(:"admin.user.reserved_stock_items")} #{@user.email}", edit_admin_user_url(@user) %>
+<% end %>
+
+<%= render :partial => 'spree/admin/users/sidebar', :locals => { :current => :reserved_stock_items } %>
+<%= render :partial => 'spree/admin/users/user_page_actions' %>
+
+<fieldset data-hook="admin_user_reserved_stock_items" class="alpha twelve columns">
+  <legend><%= Spree.t(:"admin.user.reserved_stock_items") %></legend>
+
+  <% if @reserved_stock_items.any? %>
+    <table class="stock-reserved index" id="listing_items" data-hook="stock-reserved-for-user">
+      <colgroup>
+        <col style="width: 50%" />
+        <col style="width: 20%" />
+        <col style="width: 5%" />
+      </colgroup>
+      <thead>
+        <tr>
+          <th><%= Spree.t(:item) %></th>
+          <th><%= Spree.t(:options) %></th>
+          <th><%= Spree.t(:count_on_hand) %></th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <% @reserved_stock_items.each do |item| %>
+          <tr class="<%= cycle('odd', 'even', :name => 'stock_locations')%>" data-variant-id="<%= item.variant.id %>">
+            <td class="align-center no-padding">
+              <div class='variant-container'>
+                <div class='variant-image'>
+                  <%= image_tag(item.variant.display_image(fallback: false).attachment(:small)) %>
+                </div>
+                <div class='variant-details'>
+                  <table class='stock-variant-field-table'>
+                    <tbody>
+                      <% @variant_display_attributes.each do |display_attribute| %>
+                        <tr>
+                          <td><%= Spree.t(display_attribute[:translation_key]) %></td>
+                          <td class="fullwidth">
+                            <%= item.variant.send(display_attribute[:attr_name]) %>
+                          </td>
+                        </tr>
+                      <% end %>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </td>
+            <td class="align-center">
+              <table class='stock-variant-field-table'>
+                <% item.variant.option_values.sort_by(&:option_type_name).each do |option_value| %>
+                  <tr>
+                    <td>
+                      <%= option_value.option_type_presentation %>
+                    </td>
+                    <td><%= option_value.presentation %></td>
+                  </tr>
+                <% end %>
+              </table>
+            </td>
+            <td class="align-center">
+              <span><%= item.count_on_hand %></span>
+            </td>
+
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <div class="alpha twelve columns no-objects-found">
+      <%= Spree.t(:no_resource_found, resource: I18n.t(:other, scope: 'activerecord.models.spree/reserved_stock_item')) %>
+      <% if can?([:manage], Spree::ReservedStockItem) %>
+        <%= link_to Spree.t(:add_one), spree.new_admin_reserved_stock_item_path %>!
+      <% end %>
+    </div>
+  <% end %>
+</fieldset>

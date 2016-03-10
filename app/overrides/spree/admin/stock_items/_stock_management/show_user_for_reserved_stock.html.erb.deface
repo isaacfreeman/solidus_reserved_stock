@@ -1,0 +1,2 @@
+<!-- replace "erb:contains('item.stock_location.name')" -->
+<%= stock_location_name(item) %>

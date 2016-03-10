@@ -1,0 +1,6 @@
+<!-- insert_bottom "[data-hook='admin_user_tab_options']" -->
+<% if can?(:manage, Spree::ReservedStockItem) %>
+  <li<%== ' class="active"' if current == :reserved_stock_items %>>
+    <%= link_to_with_icon 'cubes', Spree.t(:"admin.user.reserved_stock_items"), reserved_stock_items_admin_user_path(@user) %>
+  </li>
+<% end %>

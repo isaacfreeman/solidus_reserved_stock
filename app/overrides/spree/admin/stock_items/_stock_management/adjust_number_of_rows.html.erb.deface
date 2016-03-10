@@ -1,0 +1,2 @@
+<!-- replace "erb:contains('row_count = ')" -->
+<%- row_count = (variant.stock_items).size %>

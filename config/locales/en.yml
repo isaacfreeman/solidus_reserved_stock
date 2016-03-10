@@ -1,0 +1,6 @@
+---
+en:
+  spree:
+    admin:
+      user:
+        reserved_stock_items: Reserved Stock Items
