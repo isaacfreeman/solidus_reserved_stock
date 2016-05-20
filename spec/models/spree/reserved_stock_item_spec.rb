@@ -6,7 +6,8 @@ describe Spree::ReservedStockItem, type: :model do
     create(
       :stock_location,
       reserved_items: true,
-      propagate_all_variants: false
+      propagate_all_variants: false,
+      backorderable_default: false
     )
   end
   let(:user) { create(:user) }

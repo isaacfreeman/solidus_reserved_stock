@@ -1,9 +1,28 @@
+# Validates that the reserved stock location does not have backorderable_default
+class NotBackOrderableDefaultValidator < ActiveModel::Validator
+  def validate(record)
+    return unless record.reserved_items && record.backorderable_default?
+    record.errors[:backorderable_default] << "backorderable_default must be false for reserved stock locations"
+  end
+end
+
+# Validates that the reserved stock location does not have propagate_all_variants
+class NotPropagateAllVariantsValidator < ActiveModel::Validator
+  def validate(record)
+    return unless record.reserved_items && record.propagate_all_variants?
+    record.errors[:propagate_all_variants] << "propagate_all_variants must be false for reserved stock locations"
+  end
+end
+
 # Class methods to handle stock locations that contain reserved items
 # Typically I'd expect there to be only one stock location for reserved items,
 # but at this stage we're not enforcing that.
 # TODO: Move these methods to a concern with a nice clear name
 module Spree
   StockLocation.class_eval do
+    validates_with NotBackOrderableDefaultValidator
+    validates_with NotPropagateAllVariantsValidator
+
     scope :reserved_items, -> { where(reserved_items: true) }
 
     def self.reserved_items_location

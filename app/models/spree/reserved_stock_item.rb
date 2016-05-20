@@ -3,7 +3,7 @@ class ReservedStockLocationValidator < ActiveModel::Validator
   def validate(record)
     return unless record.stock_location # Missing stock location shouldbe caught by other validator
     return if record.stock_location.reserved_items?
-    record.errors[:name] << "StockLocation for ReservedStockItems must have reserved_items? == true"
+    record.errors[:stock_location] << "StockLocation for ReservedStockItems must have reserved_items? == true"
   end
 end
 
@@ -11,7 +11,7 @@ end
 class NotBackOrderableValidator < ActiveModel::Validator
   def validate(record)
     return unless record.backorderable?
-    record.errors[:name] << "ReservedStockItems must not be backorderable"
+    record.errors[:backorderable] << "ReservedStockItems must not be backorderable"
   end
 end
 

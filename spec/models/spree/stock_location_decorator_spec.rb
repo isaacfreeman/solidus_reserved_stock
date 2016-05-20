@@ -5,11 +5,34 @@ describe Spree::StockLocation, type: :model do
   subject do
     create(
       :stock_location,
-      backorderable_default: true,
+      backorderable_default: false,
+      propagate_all_variants: false,
       reserved_items: true
     )
   end
 
+  context "validation" do
+    context "when reserved_items is true" do
+      it "is invalid if backorderable_default is true" do
+        reserved_stock_item = build(
+          :stock_location,
+          backorderable_default: true,
+          propagate_all_variants: false,
+          reserved_items: true
+        )
+        expect(reserved_stock_item).to be_invalid
+      end
+      it "is invalid if propagate_all_variants is true" do
+        reserved_stock_item = build(
+          :stock_location,
+          backorderable_default: false,
+          propagate_all_variants: true,
+          reserved_items: true
+        )
+        expect(reserved_stock_item).to be_invalid
+      end
+    end
+  end
   context ".reserved_items_location" do
     it "can return the existing reserved stock location" do
       subject
@@ -21,10 +44,4 @@ describe Spree::StockLocation, type: :model do
       expect(reserved_items_location.reserved_items?).to be true
     end
   end
-
-  # TODO: must have propagate_all_variants be false if reserved_items
-
-  # TODO: StockLocation probably isn't the right place for this. I guess we need
-  #       a prioritizer?
-  it "is used before other stock locations when processing an order"
 end
