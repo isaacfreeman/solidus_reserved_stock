@@ -16,14 +16,25 @@ describe Spree::ReservedStockItem, type: :model do
       :reserved_stock_item,
       variant: FactoryGirl.create(:variant),
       stock_location: reserved_stock_location,
-      user: user
+      user: user,
+      backorderable: false
     )
   end
 
   context "validation" do
     context "stock location" do
-      it "is valid if its stock_location is for reserved_items" do
+      it "can be valid" do
         expect(subject).to be_valid
+      end
+      it "is invalid if backorderable" do
+        reserved_stock_item = build(
+          :reserved_stock_item,
+          variant: FactoryGirl.create(:variant),
+          stock_location: reserved_stock_location,
+          user: user,
+          backorderable: true
+        )
+        expect(reserved_stock_item).to be_invalid
       end
       it "is invalid if its stock_location is not for reserved_items" do
         invalid_base_stock_location = create(
@@ -33,7 +44,8 @@ describe Spree::ReservedStockItem, type: :model do
         )
         reserved_stock_item = build(
           :reserved_stock_item,
-          stock_location: invalid_base_stock_location
+          stock_location: invalid_base_stock_location,
+          backorderable: false
         )
         expect(reserved_stock_item).to be_invalid
       end
@@ -43,7 +55,8 @@ describe Spree::ReservedStockItem, type: :model do
         reserved_stock_item = build(
           :reserved_stock_item,
           stock_location: reserved_stock_location,
-          user: nil
+          user: nil,
+          backorderable: false
         )
         expect(reserved_stock_item).to be_invalid
       end
@@ -52,7 +65,8 @@ describe Spree::ReservedStockItem, type: :model do
           :reserved_stock_item,
           stock_location: reserved_stock_location,
           variant: subject.variant,
-          user: subject.user
+          user: subject.user,
+          backorderable: false
         )
         expect(reserved_stock_item).to be_invalid
       end
@@ -62,7 +76,8 @@ describe Spree::ReservedStockItem, type: :model do
           :reserved_stock_item,
           stock_location: reserved_stock_location,
           variant: subject.variant,
-          user: different_user
+          user: different_user,
+          backorderable: false
         )
         expect(reserved_stock_item).to be_valid
       end
@@ -75,7 +90,8 @@ describe Spree::ReservedStockItem, type: :model do
         :reserved_stock_item,
         stock_location: reserved_stock_location,
         variant: subject.variant,
-        user: different_user
+        user: different_user,
+        backorderable: false
       )
       reserved_stock_item.save
       expect(Spree::ReservedStockItem.count).to eq 2

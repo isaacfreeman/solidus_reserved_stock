@@ -15,7 +15,8 @@ module Spree
         stock_location: reserved_stock_location,
         original_stock_location: original_stock_location,
         user: user,
-        expires_at: 1.day.from_now
+        expires_at: 1.day.from_now,
+        backorderable: false
       )
     end
     let(:expired_reserved_stock_item) do
@@ -25,7 +26,8 @@ module Spree
         stock_location: reserved_stock_location,
         original_stock_location: original_stock_location,
         user: user,
-        expires_at: 1.day.ago
+        expires_at: 1.day.ago,
+        backorderable: false
       )
     end
 

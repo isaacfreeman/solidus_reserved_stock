@@ -5,9 +5,8 @@ AllCops:
   Exclude:
     - 'vendor/**/*'
     - 'spec/fixtures/**/*'
-    - 'spec/dummy/**/*'
-    - 'bin/**/*'
-  RunRailsCops: true
+  Rails:
+    Enabled: true
 
 Style/StringLiterals:
   EnforcedStyle: double_quotes

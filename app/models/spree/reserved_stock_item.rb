@@ -7,6 +7,14 @@ class ReservedStockLocationValidator < ActiveModel::Validator
   end
 end
 
+# Validates that the reserved stock item is not backorderable
+class NotBackOrderableValidator < ActiveModel::Validator
+  def validate(record)
+    return unless record.backorderable?
+    record.errors[:name] << "ReservedStockItems must not be backorderable"
+  end
+end
+
 module Spree
   # A StockItem that's been reserved by a customer. It will be stored in a
   # dedicated StockLocation, but rmembers the original StockLocation for the
@@ -31,6 +39,7 @@ module Spree
     variant_id_uniqueness_validator.attributes.delete(:variant_id) if variant_id_uniqueness_validator
 
     validates_with ReservedStockLocationValidator
+    validates_with NotBackOrderableValidator
     validates_uniqueness_of :variant_id,
       scope: [
         :stock_location_id,

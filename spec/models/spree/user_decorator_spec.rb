@@ -13,7 +13,8 @@ describe Spree.user_class, type: :model do
       stock_location: reserved_stock_location,
       original_stock_location: original_stock_location,
       user: subject,
-      expires_at: 1.day.from_now
+      expires_at: 1.day.from_now,
+      backorderable: false
     )
   end
 

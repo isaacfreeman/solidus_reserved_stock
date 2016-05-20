@@ -2,6 +2,10 @@ source "https://rubygems.org"
 
 gem "solidus", github: "solidusio/solidus", branch: "v1.2"
 
+group :test do
+  gem "database_cleaner"
+end
+
 gemspec
 
 if ENV["DB"] == "mysql"

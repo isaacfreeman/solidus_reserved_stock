@@ -11,7 +11,8 @@ module Spree
       Spree::StockLocation.create(
         name: "Reserved Items",
         reserved_items: true,
-        propagate_all_variants: false
+        propagate_all_variants: false,
+        backorderable_default: false
       )
     end
 
