@@ -5,7 +5,7 @@ module Spree
 
       # TODO: Find variant by SKU
       def reserve
-        @reserved_stock_item = Spree::StockReserver.new.reserve(
+        @reserved_stock_item = Spree::Stock::Reserver.new.reserve(
           params[:variant],
           params[:original_stock_location],
           params[:user],
@@ -18,7 +18,7 @@ module Spree
       end
 
       def restock
-        @reserved_stock_item = Spree::StockReserver.new.restock(
+        @reserved_stock_item = Spree::Stock::Reserver.new.restock(
           params[:variant],
           params[:user],
           params[:quantity]
@@ -29,7 +29,7 @@ module Spree
       end
 
       def restock_expired
-        Spree::StockReserver.new.restock_expired
+        Spree::Stock::Reserver.new.restock_expired
         head 204 # return success with no body
       rescue => e
         # TODO: error message

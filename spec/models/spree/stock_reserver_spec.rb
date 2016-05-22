@@ -1,7 +1,7 @@
 require "spec_helper"
 
 # Specs ReservedStockItem subclass to StockItem
-describe Spree::StockReserver, type: :model do
+describe Spree::Stock::Reserver, type: :model do
   let(:user) { create(:user) }
   let(:original_stock_location) { create(:stock_location) }
   let(:variant) { create(:variant) }
@@ -29,7 +29,7 @@ describe Spree::StockReserver, type: :model do
     )
   end
 
-  subject { Spree::StockReserver.new }
+  subject { Spree::Stock::Reserver.new }
 
   context "#reserve" do
     before(:each) do

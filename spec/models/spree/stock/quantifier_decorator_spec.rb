@@ -15,7 +15,7 @@ describe Spree::Stock::Quantifier, type: :model do
     before(:each) do
       stock_item = original_stock_location.stock_item_or_create(variant)
       stock_item.adjust_count_on_hand(10)
-      Spree::StockReserver.new.reserve(
+      Spree::Stock::Reserver.new.reserve(
         variant,
         original_stock_location,
         user,
