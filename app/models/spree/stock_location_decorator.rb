@@ -17,7 +17,6 @@ end
 # Class methods to handle stock locations that contain reserved items
 # Typically I'd expect there to be only one stock location for reserved items,
 # but at this stage we're not enforcing that.
-# TODO: Move these methods to a concern with a nice clear name
 module Spree
   StockLocation.class_eval do
     validates_with NotBackOrderableDefaultValidator

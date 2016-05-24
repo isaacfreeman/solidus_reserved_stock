@@ -8,11 +8,12 @@ Spree::Core::Engine.add_routes do
     end
   end
   namespace :api, defaults: { format: 'json' } do
-    # create -> StockReserver#reserve
-    namespace :reserved_stock_items do
-      post :reserve
-      post :restock
-      post :restock_expired
+    namespace :v1 do
+      namespace :reserved_stock_items do
+        post :reserve
+        post :restock
+        post :restock_expired
+      end
     end
   end
 end

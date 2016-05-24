@@ -11,11 +11,11 @@ describe Spree::ReservedStockItem, type: :model do
     )
   end
   let(:user) { create(:user) }
-  # TODO: specify variant here for clarity
+  let(:variant) { FactoryGirl.create(:variant) }
   subject do
     create(
       :reserved_stock_item,
-      variant: FactoryGirl.create(:variant),
+      variant: variant,
       stock_location: reserved_stock_location,
       user: user,
       backorderable: false

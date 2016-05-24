@@ -14,7 +14,7 @@ Spree.user_class.class_eval do
       .first
   end
 
-  def reserved_stock_item_or_create(variant, original_stock_location, expires_at=nil)
+  def reserved_stock_item_or_create(variant, original_stock_location, expires_at = nil)
     return unless reserved_stock_location
     reserved_stock_item(variant) || Spree::ReservedStockItem.create!(
       variant: variant,

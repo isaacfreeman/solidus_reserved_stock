@@ -3,7 +3,9 @@ Spree::Stock::Coordinator.class_eval do
 
   # Overridden so that users only see their own reserved stock items, and not
   # those reserved by other users
-  #
+  # TODO: PR into Solidus at https://github.com/solidusio/solidus/pull/1180
+  #       provides a better way to achieve this than overriding a private
+  #       method. If it's accepted, we should use that approach.
   def stock_location_variant_ids
     location_variant_ids = Spree::StockItem.
       where(variant_id: unallocated_variant_ids).
