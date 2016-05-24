@@ -4,3 +4,7 @@ en:
     admin:
       user:
         reserved_stock_items: Reserved Stock Items
+  quantity_must_be_positive: Quantity must be positive
+  no_stock_reserved_for_user_and_variant: User does not have any reserved stock for that variant
+  insufficient_stock_available: Insufficient stock available
+  insufficient_reserved_stock_available: Insufficient reserved stock available

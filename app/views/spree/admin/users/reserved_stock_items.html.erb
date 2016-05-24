@@ -1,12 +1,12 @@
 <% content_for :page_title do %>
-  <%= link_to "#{Spree.t(:"admin.user.reserved_stock_items")} #{@user.email}", edit_admin_user_url(@user) %>
+  <%= link_to "#{Spree.t(:"spree.admin.user.reserved_stock_items")} #{@user.email}", edit_admin_user_url(@user) %>
 <% end %>
 
 <%= render :partial => 'spree/admin/users/sidebar', :locals => { :current => :reserved_stock_items } %>
 <%= render :partial => 'spree/admin/users/user_page_actions' %>
 
 <fieldset data-hook="admin_user_reserved_stock_items" class="alpha twelve columns">
-  <legend><%= Spree.t(:"admin.user.reserved_stock_items") %></legend>
+  <legend><%= Spree.t(:"spree.admin.user.reserved_stock_items") %></legend>
 
   <% if @reserved_stock_items.any? %>
     <table class="stock-reserved index" id="listing_items" data-hook="stock-reserved-for-user">
@@ -71,7 +71,7 @@
     <div class="alpha twelve columns no-objects-found">
       <%= Spree.t(:no_resource_found, resource: I18n.t(:other, scope: 'activerecord.models.spree/reserved_stock_item')) %>
       <% if can?([:manage], Spree::ReservedStockItem) %>
-        <%= link_to Spree.t(:add_one), spree.new_admin_reserved_stock_item_path %>!
+        <%= link_to Spree.t("add_one"), spree.new_admin_reserved_stock_item_path %>!
       <% end %>
     </div>
   <% end %>

@@ -2,6 +2,10 @@ source "https://rubygems.org"
 
 gem "solidus", github: "solidusio/solidus", branch: "v1.2"
 
+group :development do
+  gem "i18n-tasks"
+end
+
 group :test do
   gem "database_cleaner"
 end

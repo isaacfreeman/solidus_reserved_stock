@@ -8,8 +8,7 @@ module Spree
       end
 
       # TODO: Use stock transfers.
-      # TODO: Figure out how on earth stock transfers are supposed to work
-      # TODO: Make stock_location optional, and if not present use stock_locations as for add-to-cart
+      # TODO: Make stock_location optional, and if not present use whatever's available
       def reserve(variant, original_stock_location, user, quantity, expires_at=nil)
         if quantity < 1
           raise InvalidQuantityError.new(Spree.t(:quantity_must_be_positive))
@@ -27,7 +26,7 @@ module Spree
       # TODO: Add locale files
       def restock(variant, user, quantity=nil)
         reserved_stock_item = user.reserved_stock_item(variant)
-        raise InvalidQuantityError.new(Spree.t(:no_stock_reserved_for_variant)) unless reserved_stock_item.present?
+        raise InvalidQuantityError.new(Spree.t(:no_stock_reserved_for_user_and_variant)) unless reserved_stock_item.present?
         if quantity
           if quantity < 1
             raise InvalidQuantityError.new(Spree.t(:quantity_must_be_positive))
