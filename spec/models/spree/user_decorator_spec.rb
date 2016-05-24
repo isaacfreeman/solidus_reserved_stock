@@ -45,13 +45,21 @@ describe Spree.user_class, type: :model do
     end
     it "creates and returns a reserved_stock_item if none exists" do
       expect(subject.reserved_stock_item(variant)).to be_nil
-      subject.reserved_stock_item_or_create(variant, original_stock_location)
+      subject.reserved_stock_item_or_create(variant, original_stock_location, 1.week.from_now)
       expect(subject.reserved_stock_item(variant)).not_to be_nil
     end
-    it "handles expires_at"
   end
 
-  it "can restock all reserved items"
-  it "restocks all reserved items when account is deleted"
-
+  context "when account is destroyed" do
+    it "restocks all reserved items" do
+      reserved_stock_item
+      subject.destroy
+      expect(
+        reserved_stock_location.stock_items.where(user_id: subject.id).count
+      ).to eq 0
+      expect(
+        original_stock_location.count_on_hand(variant)
+      ).to eq 10
+    end
+  end
 end
