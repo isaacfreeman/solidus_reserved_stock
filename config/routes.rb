@@ -9,10 +9,12 @@ Spree::Core::Engine.add_routes do
   end
   namespace :api, defaults: { format: 'json' } do
     namespace :v1 do
-      namespace :reserved_stock_items do
-        post :reserve
-        post :restock
-        post :restock_expired
+      resources :reserved_stock_items, only: :index do
+        collection do
+          post :reserve
+          post :restock
+          post :restock_expired
+        end
       end
     end
   end

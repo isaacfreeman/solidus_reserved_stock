@@ -5,10 +5,14 @@ module Spree
       class ReservedStockItemsController < Spree::Api::BaseController
         before_action :authorize_reserving_stock
 
+        def index
+          reserved_stock_location = Spree::StockLocation.reserved_items_location
+          @reserved_stock_items = reserved_stock_location.reserved_stock_items.all.page(params[:page]).per(params[:per_page])
+          respond_with(@reserved_stock_items)
+        end
+
         def reserve
           render_reserve_param_errors(params); return if performed?
-
-          original_stock_location = Spree::StockLocation.find(params[:original_stock_location_id])
           @reserved_stock_item = Spree::Stock::Reserver.new.reserve(
             variant,
             original_stock_location,
@@ -54,6 +58,10 @@ module Spree
           return Spree::Variant.find(variant_id) if variant_id.present?
           return Spree::Variant.find_by(sku: sku) if sku.present?
           nil
+        end
+
+        def original_stock_location
+          Spree::StockLocation.find(params[:original_stock_location_id])
         end
 
         def render_reserve_param_errors(params)

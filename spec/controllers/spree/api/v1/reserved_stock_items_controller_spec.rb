@@ -30,14 +30,30 @@ module Spree
         backorderable: false
       )
     end
+    let(:reserved_stock_item_attributes) {
+      [
+        :id,
+        :count_on_hand,
+        :expires_at,
+        :original_stock_location_id,
+        :stock_location_id,
+        :user_id,
+        :variant
+      ]
+    }
 
     before do
       stub_authentication!
     end
 
     context "as a normal user" do
+      it "cannot list reserved items" do
+        api_get :index
+        assert_unauthorized!
+      end
       it "cannot reserve stock" do
-        api_post :reserve, variant: variant, original_stock_location: original_stock_location, user: user, quantity: 4
+        api_post :reserve,
+        variant: variant, original_stock_location: original_stock_location, user: user, quantity: 4
         assert_unauthorized!
       end
       it "cannot restock" do
@@ -52,6 +68,16 @@ module Spree
 
     context "as an admin" do
       sign_in_as_admin!
+
+      describe "#index" do
+        it "can list reserved stock items" do
+          reserved_stock_item
+          api_get :index
+          expect(response).to be_success
+          expect(json_response['reserved_stock_items'].first.keys).to eq(reserved_stock_item_attributes)
+          expect(json_response['reserved_stock_items'].first['variant']['sku']).to match variant.sku
+        end
+      end
 
       describe "#reserve" do
         context "request that will succeed" do
