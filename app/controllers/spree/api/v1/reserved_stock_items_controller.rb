@@ -6,8 +6,7 @@ module Spree
         before_action :authorize_reserving_stock
 
         def index
-          reserved_stock_location = Spree::StockLocation.reserved_items_location
-          @reserved_stock_items = reserved_stock_location.reserved_stock_items.all.page(params[:page]).per(params[:per_page])
+          @reserved_stock_items = scope.all.page(params[:page]).per(params[:per_page])
           respond_with(@reserved_stock_items)
         end
 
@@ -73,6 +72,15 @@ module Spree
           return if errors.blank?
           Rails.logger.error errors
           render json: {'errors': errors}.to_json, status: 422
+        end
+
+        def scope
+          base_scope = if params[:user_id].present?
+            user
+          else
+            Spree::StockLocation.reserved_items_location
+          end
+          base_scope.reserved_stock_items.accessible_by(current_ability, :read).includes(:variant)
         end
       end
     end

@@ -38,6 +38,7 @@ module Spree
         :original_stock_location_id,
         :stock_location_id,
         :user_id,
+        :variant_id,
         :variant
       ]
     }
@@ -74,7 +75,14 @@ module Spree
           reserved_stock_item
           api_get :index
           expect(response).to be_success
-          expect(json_response['reserved_stock_items'].first.keys).to eq(reserved_stock_item_attributes)
+          expect(json_response['reserved_stock_items'].first).to have_attributes(reserved_stock_item_attributes)
+          expect(json_response['reserved_stock_items'].first['variant']['sku']).to match variant.sku
+        end
+        it "can list reserved stock items for a given user" do
+          reserved_stock_item
+          api_get :index, user_id: user.id
+          expect(response).to be_success
+          expect(json_response['reserved_stock_items'].first).to have_attributes(reserved_stock_item_attributes)
           expect(json_response['reserved_stock_items'].first['variant']['sku']).to match variant.sku
         end
       end

@@ -27,10 +27,33 @@ Or install it yourself as:
 <!-- TODO: Write usage instructions here -->
 
 ### API Usage
-<!-- TODO: Document API request here, and point to Swagger documentation -->
-- reserve
-- restock
-- restock_expired
+`GET    /api/v1/reserved_stock_items.json`
+Retrieve all reserved stock items
+
+`GET    /api/v1/user/:user_id/reserved_stock_items.json`
+Retrieve reserved stock items for a given user
+
+`POST   /api/v1/reserved_stock_items/reserve.json`
+Reserve stock for a given user.
+Parameters:
+- `variant_id` or `sku` to identify the variant (one of these is required)
+- `original_stock_location_id` to remove stock from (required)
+- `user_id` identifying the user the stock will be reserved for (required)
+- `quantity` of stock to reserve (required)
+- `expires_at` date when the reservation ends and stock can be returned to the original stock location (optional)
+
+`POST   /api/v1/reserved_stock_items/restock.json`
+Return reserved stock to its original stock location.
+Parameters:
+- `variant_id` or `sku` to identify the variant (one of these is required)
+- `user_id` identifying the user the stock was be reserved for (required)
+- `quantity` of stock to restore (optional – if not present, the full amount of reserved stock will be restored)
+
+`POST   /api/v1/reserved_stock_items/restock_expired.json`
+Restock all reserved items whose expiry date has passed.
+
+`GET    /api/stock_locations(.:format)`
+This is the same as the standard Solidus route, but the response is decorated to include a `reserved_items` parameter indicating whether the stock location is for reserved stock items.
 
 ## Contributing
 

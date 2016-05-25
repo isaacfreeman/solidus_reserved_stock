@@ -16,6 +16,9 @@ Spree::Core::Engine.add_routes do
           post :restock_expired
         end
       end
+      resources :user do
+        resources :reserved_stock_items, only: :index
+      end
     end
   end
 end
