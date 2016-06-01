@@ -24,6 +24,7 @@ module Spree
 
       # TODO: Use stock transfers
       # TODO: Add locale files
+      # TODO: Delete reserved_stock_item if quantity is now zero
       def restock(variant, user, quantity=nil)
         reserved_stock_item = user.reserved_stock_item(variant)
         raise InvalidQuantityError.new(Spree.t(:no_stock_reserved_for_user_and_variant)) unless reserved_stock_item.present?
@@ -36,19 +37,22 @@ module Spree
           end
         end
         quantity ||= reserved_stock_item.count_on_hand
+        perform_restock(variant, quantity)
+      end
+
+      def restock_expired
+        @reserved_stock_location.expired_stock_items.each do |reserved_stock_item|
+          perform_restock(reserved_stock_item.variant, reserved_stock_item.count_on_hand)
+        end
+      end
+
+      private
+
+      def perform_restock(variant, quantity)
         @reserved_stock_location.unstock(variant, quantity)
         reserved_stock_item.original_stock_location.move(variant, quantity)
         reserved_stock_item.reload
-      end
-
-      # TODO: This inefficiently requires restock to find the stock item again
-      def restock_expired
-        @reserved_stock_location.expired_stock_items.each do |reserved_stock_item|
-          variant = reserved_stock_item.variant
-          quantity = reserved_stock_item.count_on_hand
-          @reserved_stock_location.unstock(variant, quantity)
-          reserved_stock_item.original_stock_location.move(variant, quantity)
-        end
+        reserved_stock_item.destroy if reserved_stock_item.count_on_hand == 0
       end
     end
   end

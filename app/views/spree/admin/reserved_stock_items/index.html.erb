@@ -22,9 +22,10 @@
   <% if @reserved_stock_items.any? %>
     <table class="stock-reserved index" id="listing_items" data-hook="stock-reserved-for-user">
       <colgroup>
-        <col style="width: 30%" />
-        <col style="width: 20%" />
-        <col style="width: 20%" />
+        <col style="width: 40%" />
+        <col style="width: 10%" />
+        <col style="width: 10%" />
+        <col style="width: 10%" />
         <col style="width: 5%" />
         <col style="width: 5%" />
       </colgroup>
@@ -33,6 +34,7 @@
           <th><%= Spree.t(:item) %></th>
           <th><%= Spree.t(:options) %></th>
           <th><%= Spree.t(:original_stock_location) %></th>
+          <th><%= Spree.t(:expires_at) %></th>
           <th><%= Spree.t(:count_on_hand) %></th>
         </tr>
       </thead>
@@ -75,6 +77,9 @@
             </td>
             <td class="align-center">
               <%= item.original_stock_location.name %>
+            </td>
+            <td class="align-center">
+              <%= item.expires_at %>
             </td>
             <td class="align-center">
               <span><%= item.count_on_hand %></span>
