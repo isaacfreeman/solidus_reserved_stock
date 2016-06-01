@@ -1,0 +1,32 @@
+<div data-hook="admin_reserved_stock_item_form_fields" class="row">
+  <div class="alpha omega twelve columns">
+    <%= f.field_container :original_stock_location do %>
+      <%= f.label :original_stock_location, Spree.t('admin.reserved_stock_item.original_stock_location') %>
+      <%= f.select :original_stock_location_id, @original_stock_locations.to_a.collect{|l|[l.name.humanize, l.id]}, {include_blank: false}, {class: 'select2 fullwidth', "data-placeholder" => Spree.t('admin.reserved_stock_item.select_an_original_stock_location')} %>
+      <%= f.error_message_on :original_stock_location_id %>
+    <% end %>
+  </div>
+
+  <div class="alpha omega twelve columns">
+    <%= f.field_container :variant_id do %>
+      <%= f.label 'variant_id', Spree.t(:variant) %>
+      <%= f.select :variant_id, options_from_collection_for_select(@variants, :id, :name_and_sku), {include_blank: false}, {class: 'select2 fullwidth'} %>
+    <% end %>
+  </div>
+
+  <div class="alpha omega twelve columns">
+    <%= f.field_container :quantity do %>
+      <%= label_tag 'quantity', Spree.t(:quantity) %>
+      <%= number_field_tag 'reserved_stock_item[quantity]', 1, class: 'fullwidth', id: :reserved_stock_item_quantity %>
+    <% end %>
+  </div>
+
+  <div class="alpha omega twelve columns">
+    <%= f.field_container :expires_at do %>
+      <%= f.label :expires_at, Spree.t('admin.reserved_stock_item.expires_at') %>
+      <%= f.error_message_on :expires_at %>
+      <%= f.text_field :expires_at, :value => datepicker_field_value(@reserved_stock_item.expires_at), :class => 'datepicker' %>
+    <% end %>
+  </div>
+
+</div>

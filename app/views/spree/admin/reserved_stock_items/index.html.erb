@@ -1,24 +1,38 @@
 <% content_for :page_title do %>
-  <%= link_to "#{Spree.t(:"spree.admin.user.reserved_stock_items")} #{@user.email}", edit_admin_user_url(@user) %>
+  <%= link_to "#{Spree.t(:"admin.user.reserved_stock_items")} #{@user.email}", edit_admin_user_url(@user) %>
 <% end %>
 
+<% content_for :page_actions do %>
+  <li>
+    <%= link_to_with_icon 'arrow-left', Spree.t("admin.reserved_stock_item.back_to_user_list"), admin_users_path, class: 'button' %>
+  </li>
+  <% if can?([:manage], Spree::ReservedStockItem) %>
+    <li>
+      <%= button_link_to Spree.t(:new_reserved_stock_item), spree.new_admin_user_reserved_stock_item_path(@user), :icon => 'plus', :id => 'admin_new_reserved_stock_item_link' %>
+    </li>
+  <% end %>
+<% end %>
+
+
 <%= render :partial => 'spree/admin/users/sidebar', :locals => { :current => :reserved_stock_items } %>
-<%= render :partial => 'spree/admin/users/user_page_actions' %>
 
 <fieldset data-hook="admin_user_reserved_stock_items" class="alpha twelve columns">
-  <legend><%= Spree.t(:"spree.admin.user.reserved_stock_items") %></legend>
+  <legend><%= Spree.t(:"admin.user.reserved_stock_items") %></legend>
 
   <% if @reserved_stock_items.any? %>
     <table class="stock-reserved index" id="listing_items" data-hook="stock-reserved-for-user">
       <colgroup>
-        <col style="width: 50%" />
+        <col style="width: 30%" />
         <col style="width: 20%" />
+        <col style="width: 20%" />
+        <col style="width: 5%" />
         <col style="width: 5%" />
       </colgroup>
       <thead>
         <tr>
           <th><%= Spree.t(:item) %></th>
           <th><%= Spree.t(:options) %></th>
+          <th><%= Spree.t(:original_stock_location) %></th>
           <th><%= Spree.t(:count_on_hand) %></th>
         </tr>
       </thead>
@@ -60,9 +74,16 @@
               </table>
             </td>
             <td class="align-center">
+              <%= item.original_stock_location.name %>
+            </td>
+            <td class="align-center">
               <span><%= item.count_on_hand %></span>
             </td>
-
+            <td class="actions">
+              <% if can?(:manage, item) %>
+                <%= link_to_with_icon('undo', Spree.t(:restock), restock_admin_user_reserved_stock_item_path(@user, item), method: :post) %>
+              <% end %>
+            </td>
           </tr>
         <% end %>
       </tbody>
@@ -71,7 +92,7 @@
     <div class="alpha twelve columns no-objects-found">
       <%= Spree.t(:no_resource_found, resource: I18n.t(:other, scope: 'activerecord.models.spree/reserved_stock_item')) %>
       <% if can?([:manage], Spree::ReservedStockItem) %>
-        <%= link_to Spree.t("add_one"), spree.new_admin_reserved_stock_item_path %>!
+        <%= link_to Spree.t("add_one"), spree.new_admin_user_reserved_stock_item_path(@user) %>!
       <% end %>
     </div>
   <% end %>

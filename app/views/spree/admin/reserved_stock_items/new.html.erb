@@ -1,0 +1,19 @@
+<% content_for :page_title do %>
+  <%= link_to "#{Spree.t(:editing_user)} #{@user.email}", edit_admin_user_url(@user) %>
+<% end %>
+
+<%= render :partial => 'spree/admin/users/sidebar', :locals => { :current => :reserved_stock_items } %>
+<% content_for :page_actions do %>
+  <li>
+    <%= link_to_with_icon 'arrow-left', Spree.t("admin.reserved_stock_item.back_to_reserved_stock_item_list"), admin_user_reserved_stock_items_path(@user), class: 'button' %>
+  </li>
+<% end %>
+
+
+<%= form_for [:admin, @user, @reserved_stock_item] do |f| %>
+  <fieldset>
+    <legend align="center"><%= Spree.t("admin.reserved_stock_item.new") %></legend>
+    <%= render :partial => 'form', :locals => { :f => f } %>
+    <%= render :partial => 'spree/admin/shared/new_resource_links', :locals => { :collection_url => admin_user_reserved_stock_items_path(@user) } %>
+  </fieldset>
+<% end %>

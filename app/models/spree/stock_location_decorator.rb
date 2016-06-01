@@ -23,6 +23,7 @@ module Spree
     validates_with NotPropagateAllVariantsValidator
 
     scope :reserved_items, -> { where(reserved_items: true) }
+    scope :not_reserved_items, -> { where(reserved_items: false) }
 
     def self.reserved_items_location
       return reserved_items.first if reserved_items.any?
