@@ -55,6 +55,11 @@ Restock all reserved items whose expiry date has passed.
 `GET    /api/stock_locations(.:format)`
 This is the same as the standard Solidus route, but the response is decorated to include a `reserved_items` parameter indicating whether the stock location is for reserved stock items.
 
+`GET    /api/variants/:id?user_id=:user_id`
+Same as the standard Solidus route, but accepts an optional `user_id` parameter
+so that `total_on_hand` can include reserved stock for that user, if any.
+
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/resolve/solidus_reserved_stock. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](contributor-covenant.org) code of conduct.
