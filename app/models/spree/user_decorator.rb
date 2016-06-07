@@ -4,7 +4,7 @@ Spree.user_class.class_eval do
   before_destroy :restock_all_reserved_items!
 
   def reserved_count_on_hand(variant)
-    reserved_stock_item(variant).try(:count_on_hand)
+    reserved_stock_item(variant).try(:count_on_hand) || 0
   end
 
   def reserved_stock_item(variant)
