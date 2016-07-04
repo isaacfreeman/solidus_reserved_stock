@@ -9,12 +9,14 @@ module Spree
 
       # TODO: Use stock transfers.
       # TODO: Make stock_location optional, and if not present use whatever's available
+      # TODO: Raise suitable error if variant is nil (otherwise we get InvalidQuantityError)
       def reserve(variant, original_stock_location, user, quantity, expires_at=nil)
-        if quantity < 1
-          raise InvalidQuantityError.new(Spree.t(:quantity_must_be_positive))
+        count_on_hand = original_stock_location.count_on_hand(variant)
+        if quantity < 1 || count_on_hand.blank?
+          raise InvalidQuantityError, Spree.t(:quantity_must_be_positive)
         end
-        if quantity > original_stock_location.count_on_hand(variant)
-          raise InvalidQuantityError.new(Spree.t(:insufficient_stock_available))
+        if quantity > count_on_hand
+          raise InvalidQuantityError, Spree.t(:insufficient_stock_available)
         end
         reserved_stock_item = user.reserved_stock_item_or_create(variant, original_stock_location, expires_at)
         reserved_stock_item.stock_movements.create!(quantity: quantity)

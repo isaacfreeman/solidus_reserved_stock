@@ -5,6 +5,8 @@ module Spree
       class ReservedStockItemsController < Spree::Api::BaseController
         before_action :authorize_reserving_stock
 
+        rescue_from ActiveRecord::RecordNotFound, with: :not_found
+
         def index
           @reserved_stock_items = scope.all.page(params[:page]).per(params[:per_page])
           respond_with(@reserved_stock_items)
@@ -19,10 +21,11 @@ module Spree
             params[:quantity],
             params[:expires_at]
           )
-          respond_with(@reserved_stock_item, status: :created, default_template: :show)
-        rescue => e
-          # TODO: Appropriate error if @reserved_stock_item not returned
-          invalid_resource!(@reserved_stock_item)
+          if @reserved_stock_item.present?
+            respond_with(@reserved_stock_item, status: :created, default_template: :show)
+          else
+            invalid_resource!(@reserved_stock_item)
+          end
         end
 
         def restock
@@ -54,9 +57,8 @@ module Spree
         def variant
           variant_id = params[:variant_id]
           sku = params[:sku]
-          return Spree::Variant.find(variant_id) if variant_id.present?
-          return Spree::Variant.find_by(sku: sku) if sku.present?
-          nil
+          return Spree::Variant.where(sku: sku).first! if sku.present?
+          Spree::Variant.find(variant_id)
         end
 
         def original_stock_location
@@ -81,6 +83,11 @@ module Spree
             Spree::StockLocation.reserved_items_location
           end
           base_scope.reserved_stock_items.accessible_by(current_ability, :read).includes(:variant)
+        end
+
+        def not_found(error)
+          @error = error
+          render "spree/api/v1/reserved_stock_items/errors/entity_not_found", status: 404
         end
       end
     end

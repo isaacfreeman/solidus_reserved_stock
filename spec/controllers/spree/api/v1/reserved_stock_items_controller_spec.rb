@@ -121,7 +121,7 @@ module Spree
                      original_stock_location_id: original_stock_location.id,
                      user_id: user.id,
                      quantity: 4
-            expect(response.status).to eq 422
+            expect(response.status).to eq 404
           end
         end
         context "can't find original stock location" do
@@ -131,7 +131,7 @@ module Spree
                      original_stock_location_id: 1000,
                      user_id: user.id,
                      quantity: 4
-            expect(response.status).to eq 422
+            expect(response.status).to eq 404
           end
         end
         context "can't find user" do
@@ -141,7 +141,7 @@ module Spree
                      original_stock_location_id: original_stock_location.id,
                      user_id: 1000,
                      quantity: 4
-            expect(response.status).to eq 422
+            expect(response.status).to eq 404
           end
         end
         context "quantity unavailable" do
