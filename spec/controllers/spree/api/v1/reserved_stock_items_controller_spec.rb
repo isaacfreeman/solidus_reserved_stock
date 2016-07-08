@@ -168,12 +168,12 @@ module Spree
           reserved_stock_item
         end
         it "restores all stock if no quantity given" do
-          api_post :restock, variant_id: variant.id, user_id: user.id
+          api_post :restock, variant_id: variant.id, user_id: user.id, original_stock_location_id: original_stock_location.id
           expect(response.status).to eq 201
           expect(json_response[:count_on_hand]).to eq 0
         end
         it "restores some stock if quantity given" do
-          api_post :restock, variant_id: variant.id, user_id: user.id, quantity: 4
+          api_post :restock, variant_id: variant.id, user_id: user.id, original_stock_location_id: original_stock_location.id, quantity: 4
           expect(response.status).to eq 201
           expect(json_response[:count_on_hand]).to eq 6
         end

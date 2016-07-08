@@ -12,7 +12,7 @@ module Spree
       # TODO: Raise suitable error if variant is nil (otherwise we get InvalidQuantityError)
       def reserve(variant, original_stock_location, user, quantity, expires_at=nil)
         count_on_hand = original_stock_location.count_on_hand(variant)
-        if quantity < 1 || count_on_hand.blank?
+        if quantity < 1 || quantity.blank?
           raise InvalidQuantityError, Spree.t(:quantity_must_be_positive)
         end
         if quantity > count_on_hand
@@ -26,8 +26,8 @@ module Spree
 
       # TODO: Use stock transfers
       # TODO: Add locale files
-      def restock(variant, user, quantity=nil)
-        reserved_stock_item = user.reserved_stock_item(variant)
+      def restock(variant, user, original_stock_location, quantity=nil)
+        reserved_stock_item = user.reserved_stock_item(variant, original_stock_location)
         raise InvalidQuantityError.new(Spree.t(:no_stock_reserved_for_user_and_variant)) unless reserved_stock_item.present?
         if quantity
           if quantity < 1

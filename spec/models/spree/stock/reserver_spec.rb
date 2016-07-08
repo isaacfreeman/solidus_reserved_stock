@@ -38,12 +38,12 @@ describe Spree::Stock::Reserver, type: :model do
     end
     it "moves stock items to the reserved stock location" do
       subject.reserve(variant, original_stock_location, user, 4)
-      expect(user.reserved_count_on_hand(variant)).to eq 4
+      expect(user.reserved_count_on_hand(variant, original_stock_location)).to eq 4
       expect(original_stock_location.count_on_hand(variant)).to eq 6
     end
     it "remembers original stock location" do
       subject.reserve(variant, original_stock_location, user, 4)
-      reserved_stock_item = user.reserved_stock_item(variant)
+      reserved_stock_item = user.reserved_stock_item(variant, original_stock_location)
       expect(
         reserved_stock_item.original_stock_location
       ).to eq original_stock_location
@@ -65,23 +65,23 @@ describe Spree::Stock::Reserver, type: :model do
       reserved_stock_item
     end
     it "can restore all stock to the original stock location" do
-      subject.restock(variant, user)
+      subject.restock(variant, user, original_stock_location)
       expect(original_stock_location.count_on_hand(variant)).to eq 10
-      expect(user.reserved_count_on_hand(variant)).to eq 0
+      expect(user.reserved_count_on_hand(variant, original_stock_location)).to eq 0
     end
     it "can restore a quantity of stock to the original stock location" do
-      subject.restock(variant, user, 4)
+      subject.restock(variant, user, original_stock_location, 4)
       expect(original_stock_location.count_on_hand(variant)).to eq 4
-      expect(user.reserved_count_on_hand(variant)).to eq 6
+      expect(user.reserved_count_on_hand(variant, original_stock_location)).to eq 6
     end
     it "won't restock more stock than exists"do
       expect do
-        subject.restock(variant, user, 1000)
+        subject.restock(variant, user, original_stock_location, 1000)
       end.to raise_error Spree::Stock::Reserver::InvalidQuantityError
     end
     it "won't restock zero stock" do
       expect do
-        subject.restock(variant, user, 0)
+        subject.restock(variant, user, original_stock_location, 0)
       end.to raise_error Spree::Stock::Reserver::InvalidQuantityError
     end
   end
@@ -91,13 +91,13 @@ describe Spree::Stock::Reserver, type: :model do
       expired_reserved_stock_item
       subject.restock_expired
       expect(original_stock_location.count_on_hand(variant)).to eq 10
-      expect(user.reserved_count_on_hand(variant)).to eq 0
+      expect(user.reserved_count_on_hand(variant, original_stock_location)).to eq 0
     end
     it "doesn't restore unexpired ReservedStockItems" do
       reserved_stock_item
       subject.restock_expired
       expect(original_stock_location.count_on_hand(variant)).to eq 0
-      expect(user.reserved_count_on_hand(variant)).to eq 10
+      expect(user.reserved_count_on_hand(variant, original_stock_location)).to eq 10
     end
   end
 end

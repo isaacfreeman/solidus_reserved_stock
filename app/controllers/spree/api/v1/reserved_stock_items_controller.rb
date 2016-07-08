@@ -30,7 +30,7 @@ module Spree
 
         def restock
           @reserved_stock_item = Spree::Stock::Reserver.new.restock(
-            variant, user, params[:quantity]
+            variant, user, original_stock_location, params[:quantity]
           )
           respond_with(@reserved_stock_item, status: :created, default_template: :show)
         rescue => e

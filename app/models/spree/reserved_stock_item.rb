@@ -41,8 +41,10 @@ module Spree
       scope: [
         :stock_location_id,
         :deleted_at,
-        :user_id
+        :user_id,
+        :original_stock_location_id
       ]
     validates :user_id, presence: true
+    validates :original_stock_location_id, presence: true
   end
 end

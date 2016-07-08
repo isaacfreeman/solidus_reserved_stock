@@ -14,8 +14,8 @@ Spree::Stock::Quantifier.class_eval do
     end
     @stock_items = Spree::StockItem.joins(:stock_location).where(where_args)
 
-    if user && user.reserved_stock_item(variant)
-      @stock_items.unshift user.reserved_stock_item(variant)
+    if user && user.reserved_stock_items_for_variant(variant)
+      @stock_items += user.reserved_stock_items_for_variant(variant).to_a
     end
   end
 

@@ -2,6 +2,7 @@ require "spec_helper"
 
 # Specs ReservedStockItem subclass to StockItem
 describe Spree::ReservedStockItem, type: :model do
+  let(:original_stock_location) { create(:stock_location) }
   let(:reserved_stock_location) do
     create(
       :stock_location,
@@ -18,7 +19,8 @@ describe Spree::ReservedStockItem, type: :model do
       variant: variant,
       stock_location: reserved_stock_location,
       user: user,
-      backorderable: false
+      backorderable: false,
+      original_stock_location: original_stock_location
     )
   end
 
@@ -33,6 +35,7 @@ describe Spree::ReservedStockItem, type: :model do
           variant: FactoryGirl.create(:variant),
           stock_location: reserved_stock_location,
           user: user,
+          original_stock_location: original_stock_location,
           backorderable: true
         )
         expect(reserved_stock_item).to be_invalid
@@ -57,7 +60,8 @@ describe Spree::ReservedStockItem, type: :model do
           :reserved_stock_item,
           stock_location: reserved_stock_location,
           user: nil,
-          backorderable: false
+          backorderable: false,
+          original_stock_location: original_stock_location
         )
         expect(reserved_stock_item).to be_invalid
       end
@@ -67,7 +71,8 @@ describe Spree::ReservedStockItem, type: :model do
           stock_location: reserved_stock_location,
           variant: subject.variant,
           user: subject.user,
-          backorderable: false
+          backorderable: false,
+          original_stock_location: original_stock_location
         )
         expect(reserved_stock_item).to be_invalid
       end
@@ -78,7 +83,44 @@ describe Spree::ReservedStockItem, type: :model do
           stock_location: reserved_stock_location,
           variant: subject.variant,
           user: different_user,
+          backorderable: false,
+          original_stock_location: original_stock_location
+        )
+        expect(reserved_stock_item).to be_valid
+      end
+    end
+    context "original_stock_location" do
+      it "is invalid without an original_stock_location" do
+        reserved_stock_item = build(
+          :reserved_stock_item,
+          variant: variant,
+          stock_location: reserved_stock_location,
+          user: user,
+          backorderable: false,
+          original_stock_location: nil
+        )
+        expect(reserved_stock_item).to be_invalid
+      end
+      it "is invalid if variant and original_stock_location are not unique" do
+        reserved_stock_item = build(
+          :reserved_stock_item,
+          stock_location: reserved_stock_location,
+          variant: subject.variant,
+          user: user,
+          original_stock_location: subject.original_stock_location,
           backorderable: false
+        )
+        expect(reserved_stock_item).to be_invalid
+      end
+      it "is valid if variant is not unique, but original_stock_location is" do
+        different_original_stock_location = create(:stock_location)
+        reserved_stock_item = build(
+          :reserved_stock_item,
+          stock_location: reserved_stock_location,
+          variant: subject.variant,
+          user: user,
+          backorderable: false,
+          original_stock_location: different_original_stock_location
         )
         expect(reserved_stock_item).to be_valid
       end
@@ -92,7 +134,21 @@ describe Spree::ReservedStockItem, type: :model do
         stock_location: reserved_stock_location,
         variant: subject.variant,
         user: different_user,
-        backorderable: false
+        backorderable: false,
+        original_stock_location: original_stock_location
+      )
+      reserved_stock_item.save
+      expect(Spree::ReservedStockItem.count).to eq 2
+    end
+    it "can save two items with same variant but different original_stock_location" do
+      different_original_stock_location = create(:stock_location)
+      reserved_stock_item = build(
+        :reserved_stock_item,
+        stock_location: reserved_stock_location,
+        variant: subject.variant,
+        user: user,
+        backorderable: false,
+        original_stock_location: different_original_stock_location
       )
       reserved_stock_item.save
       expect(Spree::ReservedStockItem.count).to eq 2

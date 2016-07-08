@@ -46,6 +46,7 @@ Return reserved stock to its original stock location.
 Parameters:
 - `variant_id` or `sku` to identify the variant (one of these is required)
 - `user_id` identifying the user the stock was be reserved for (required)
+- `original_stock_location_id` to which the stock will be returned (required)
 - `quantity` of stock to restore (optional – if not present, the full amount of reserved stock will be restored)
 
 `POST   /api/v1/reserved_stock_items/restock_expired.json`
