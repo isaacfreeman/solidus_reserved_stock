@@ -18,6 +18,7 @@ end
 # Class methods to handle stock locations that contain reserved items
 module Spree
   class StockLocation::UserRequiredArgumentError < ArgumentError; end
+  class StockLocation::OriginalStockLocationRequiredArgumentError < ArgumentError; end
 
   StockLocation.class_eval do
     validates_with NotBackOrderableDefaultValidator
@@ -51,29 +52,33 @@ module Spree
 
     # Overridden to add optional user_id argument
     alias_method :original_stock_item, :stock_item
-    def stock_item(variant_id, user_id = nil)
+    def stock_item(variant_id, user_id = nil, original_stock_location_id = nil)
       return original_stock_item(variant_id) unless reserved_items?
       raise(
         Spree::StockLocation::UserRequiredArgumentError,
         Spree.t(:user_id_required_for_reserved_stock_location)
       ) unless user_id.present?
-      stock_items.where(variant_id: variant_id, user_id: user_id)
+      raise(
+        Spree::StockLocation::OriginalStockLocationRequiredArgumentError,
+        Spree.t(:original_stock_location_id_required_for_reserved_stock_location)
+      ) unless original_stock_location_id.present?
+      stock_items.where(variant_id: variant_id, user_id: user_id, original_stock_location_id: original_stock_location_id)
                  .order(:id)
                  .first
     end
 
     # Overridden to add optional user argument
     alias_method :original_unstock, :unstock
-    def unstock(variant, quantity, originator = nil, user = nil)
+    def unstock(variant, quantity, originator = nil, user = nil, original_stock_location = nil)
       return original_unstock(variant, quantity, originator = nil) unless reserved_items?
-      move(variant, -quantity, originator, user)
+      move(variant, -quantity, originator, user, original_stock_location)
     end
 
     # Overridden to add optional user argument
     alias_method :original_move, :move
-    def move(variant, quantity, originator = nil, user = nil)
+    def move(variant, quantity, originator = nil, user = nil, original_stock_location = nil)
       return original_move(variant, quantity, originator = nil) unless reserved_items?
-      stock_item = stock_item(variant, user)
+      stock_item = stock_item(variant, user, original_stock_location)
       if quantity < 1 && !stock_item
         raise InvalidMovementError, Spree.t(:negative_movement_absent_item)
       end

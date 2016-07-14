@@ -22,3 +22,4 @@ en:
     new_reserved_stock_item: New reserved stock item
     successfully_restocked: Successfully restocked
     user_id_required_for_reserved_stock_location: user_id is required to retrieve a stock item for a reserved stock location
+    original_stock_location_id_required_for_reserved_stock_location: original_stock_location_id is required to retrieve a stock item for a reserved stock location

@@ -68,6 +68,18 @@ describe Spree::StockLocation, type: :model do
           backorderable: false
         )
       end
+      let(:other_original_stock_location) { create(:stock_location) }
+      let(:other_original_stock_location_reserved_stock_item) do
+        create(
+          :reserved_stock_item,
+          variant: variant,
+          stock_location: subject,
+          original_stock_location: other_original_stock_location,
+          user: user,
+          expires_at: 1.day.from_now,
+          backorderable: false
+        )
+      end
       subject do
         create(
           :stock_location,
@@ -82,14 +94,29 @@ describe Spree::StockLocation, type: :model do
           other_user_reserved_stock_item
           reserved_stock_item
           expect(first_stock_item).to eq other_user_reserved_stock_item
-          expect(subject.stock_item(variant.id, user.id)).to eq reserved_stock_item
+          expect(subject.stock_item(variant.id, user.id, original_stock_location.id)).to eq reserved_stock_item
         end
       end
       context "when no user argument is given" do
         it "raises an error" do
           expect do
-            subject.stock_item(variant.id)
+            subject.stock_item(variant.id, nil, original_stock_location.id)
           end.to raise_error Spree::StockLocation::UserRequiredArgumentError
+        end
+      end
+      context "when an original stock location argument is given" do
+        it "returns the reserved_stock_item for the given original_stock_location" do
+          other_original_stock_location_reserved_stock_item
+          reserved_stock_item
+          expect(first_stock_item).to eq other_original_stock_location_reserved_stock_item
+          expect(subject.stock_item(variant.id, user.id, original_stock_location.id)).to eq reserved_stock_item
+        end
+      end
+      context "when no orignal stock location argument is given" do
+        it "raises an error" do
+          expect do
+            subject.stock_item(variant.id, user.id, nil)
+          end.to raise_error Spree::StockLocation::OriginalStockLocationRequiredArgumentError
         end
       end
     end

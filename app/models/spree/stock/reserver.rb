@@ -65,8 +65,9 @@ module Spree
       def perform_restock(reserved_stock_item, quantity)
         variant = reserved_stock_item.variant
         user = reserved_stock_item.user
-        @reserved_stock_location.unstock(variant, quantity, nil, user)
-        reserved_stock_item.original_stock_location.move(variant, quantity)
+        original_stock_location = reserved_stock_item.original_stock_location
+        @reserved_stock_location.unstock(variant, quantity, nil, user, original_stock_location)
+        original_stock_location.move(variant, quantity)
         reserved_stock_item.reload
         reserved_stock_item.destroy if reserved_stock_item.count_on_hand == 0
         reserved_stock_item

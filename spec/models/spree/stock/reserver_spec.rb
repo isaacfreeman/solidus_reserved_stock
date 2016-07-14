@@ -3,7 +3,6 @@ require "spec_helper"
 # Specs ReservedStockItem subclass to StockItem
 describe Spree::Stock::Reserver, type: :model do
   let(:user) { create(:user) }
-  let(:other_user) { create(:user) }
   let(:original_stock_location) { create(:stock_location) }
   let(:variant) { create(:variant) }
   let(:reserved_stock_location) { Spree::StockLocation.reserved_items_location }
@@ -18,29 +17,6 @@ describe Spree::Stock::Reserver, type: :model do
       backorderable: false
     )
   end
-  let(:other_user_reserved_stock_item) do
-    create(
-      :reserved_stock_item,
-      variant: variant,
-      stock_location: reserved_stock_location,
-      original_stock_location: original_stock_location,
-      user: other_user,
-      expires_at: 1.day.from_now,
-      backorderable: false
-    )
-  end
-  let(:expired_reserved_stock_item) do
-    create(
-      :reserved_stock_item,
-      variant: variant,
-      stock_location: reserved_stock_location,
-      original_stock_location: original_stock_location,
-      user: user,
-      expires_at: 1.day.ago,
-      backorderable: false
-    )
-  end
-
   subject { Spree::Stock::Reserver.new }
 
   context "#reserve" do
@@ -98,19 +74,70 @@ describe Spree::Stock::Reserver, type: :model do
         end.to raise_error Spree::Stock::Reserver::InvalidQuantityError
       end
     end
-    context "when there are two reserved_stock_items for the same variant" do
-      it "doesn't restock the wrong stock_item" do
-        other_user_reserved_stock_item
-        reserved_stock_item
-        expect(reserved_stock_location.stock_items.order(:id).first).to eq other_user_reserved_stock_item
-        subject.restock(variant, user, original_stock_location)
-        expect(reserved_stock_item.reload.count_on_hand).to eq 0
-        expect(other_user_reserved_stock_item.reload.count_on_hand).to eq 10
+    context "when two reserved_stock_items have same variant" do
+      context "but different users" do
+        let(:other_user) { create(:user) }
+        let(:other_user_reserved_stock_item) do
+          create(
+            :reserved_stock_item,
+            variant: variant,
+            stock_location: reserved_stock_location,
+            original_stock_location: original_stock_location,
+            user: other_user,
+            expires_at: 1.day.from_now,
+            backorderable: false
+          )
+        end
+        before do
+          other_user_reserved_stock_item
+          reserved_stock_item
+        end
+        it "restocks the right stock_item" do
+          expect(reserved_stock_location.stock_items.order(:id).first).to eq other_user_reserved_stock_item
+          subject.restock(variant, user, original_stock_location)
+          expect(reserved_stock_item.reload.count_on_hand).to eq 0
+          expect(other_user_reserved_stock_item.reload.count_on_hand).to eq 10
+        end
+      end
+      context "but different original stock location" do
+        let(:other_original_stock_location) { create(:stock_location) }
+        let(:other_original_stock_location_reserved_stock_item) do
+          create(
+            :reserved_stock_item,
+            variant: variant,
+            stock_location: reserved_stock_location,
+            original_stock_location: other_original_stock_location,
+            user: user,
+            expires_at: 1.day.from_now,
+            backorderable: false
+          )
+        end
+        before do
+          other_original_stock_location_reserved_stock_item
+          reserved_stock_item
+        end
+        it "restocks the right stock_item" do
+          expect(reserved_stock_location.stock_items.order(:id).first).to eq other_original_stock_location_reserved_stock_item
+          subject.restock(variant, user, original_stock_location)
+          expect(reserved_stock_item.reload.count_on_hand).to eq 0
+          expect(other_original_stock_location_reserved_stock_item.reload.count_on_hand).to eq 10
+        end
       end
     end
   end
 
   context "#restock_expired" do
+    let(:expired_reserved_stock_item) do
+      create(
+        :reserved_stock_item,
+        variant: variant,
+        stock_location: reserved_stock_location,
+        original_stock_location: original_stock_location,
+        user: user,
+        expires_at: 1.day.ago,
+        backorderable: false
+      )
+    end
     it "restores expired ReservedStockItems" do
       expired_reserved_stock_item
       subject.restock_expired
