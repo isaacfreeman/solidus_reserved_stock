@@ -3,6 +3,7 @@ require "spec_helper"
 # Specs ReservedStockItem subclass to StockItem
 describe Spree::Stock::Reserver, type: :model do
   let(:user) { create(:user) }
+  let(:other_user) { create(:user) }
   let(:original_stock_location) { create(:stock_location) }
   let(:variant) { create(:variant) }
   let(:reserved_stock_location) { Spree::StockLocation.reserved_items_location }
@@ -13,6 +14,17 @@ describe Spree::Stock::Reserver, type: :model do
       stock_location: reserved_stock_location,
       original_stock_location: original_stock_location,
       user: user,
+      expires_at: 1.day.from_now,
+      backorderable: false
+    )
+  end
+  let(:other_user_reserved_stock_item) do
+    create(
+      :reserved_stock_item,
+      variant: variant,
+      stock_location: reserved_stock_location,
+      original_stock_location: original_stock_location,
+      user: other_user,
       expires_at: 1.day.from_now,
       backorderable: false
     )
@@ -61,28 +73,40 @@ describe Spree::Stock::Reserver, type: :model do
   end
 
   context "#restock" do
-    before(:each) do
-      reserved_stock_item
+    context "when there's one reserved_stock_item" do
+      before(:each) do
+        reserved_stock_item
+      end
+      it "can restore all stock to the original stock location" do
+        subject.restock(variant, user, original_stock_location)
+        expect(original_stock_location.count_on_hand(variant)).to eq 10
+        expect(user.reserved_count_on_hand(variant, original_stock_location)).to eq 0
+      end
+      it "can restore a quantity of stock to the original stock location" do
+        subject.restock(variant, user, original_stock_location, 4)
+        expect(original_stock_location.count_on_hand(variant)).to eq 4
+        expect(user.reserved_count_on_hand(variant, original_stock_location)).to eq 6
+      end
+      it "won't restock more stock than exists"do
+        expect do
+          subject.restock(variant, user, original_stock_location, 1000)
+        end.to raise_error Spree::Stock::Reserver::InvalidQuantityError
+      end
+      it "won't restock zero stock" do
+        expect do
+          subject.restock(variant, user, original_stock_location, 0)
+        end.to raise_error Spree::Stock::Reserver::InvalidQuantityError
+      end
     end
-    it "can restore all stock to the original stock location" do
-      subject.restock(variant, user, original_stock_location)
-      expect(original_stock_location.count_on_hand(variant)).to eq 10
-      expect(user.reserved_count_on_hand(variant, original_stock_location)).to eq 0
-    end
-    it "can restore a quantity of stock to the original stock location" do
-      subject.restock(variant, user, original_stock_location, 4)
-      expect(original_stock_location.count_on_hand(variant)).to eq 4
-      expect(user.reserved_count_on_hand(variant, original_stock_location)).to eq 6
-    end
-    it "won't restock more stock than exists"do
-      expect do
-        subject.restock(variant, user, original_stock_location, 1000)
-      end.to raise_error Spree::Stock::Reserver::InvalidQuantityError
-    end
-    it "won't restock zero stock" do
-      expect do
-        subject.restock(variant, user, original_stock_location, 0)
-      end.to raise_error Spree::Stock::Reserver::InvalidQuantityError
+    context "when there are two reserved_stock_items for the same variant" do
+      it "doesn't restock the wrong stock_item" do
+        other_user_reserved_stock_item
+        reserved_stock_item
+        expect(reserved_stock_location.stock_items.order(:id).first).to eq other_user_reserved_stock_item
+        subject.restock(variant, user, original_stock_location)
+        expect(reserved_stock_item.reload.count_on_hand).to eq 0
+        expect(other_user_reserved_stock_item.reload.count_on_hand).to eq 10
+      end
     end
   end
 

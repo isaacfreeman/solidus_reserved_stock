@@ -14,10 +14,11 @@ class NotPropagateAllVariantsValidator < ActiveModel::Validator
   end
 end
 
+
 # Class methods to handle stock locations that contain reserved items
-# Typically I'd expect there to be only one stock location for reserved items,
-# but at this stage we're not enforcing that.
 module Spree
+  class StockLocation::UserRequiredArgumentError < ArgumentError; end
+
   StockLocation.class_eval do
     validates_with NotBackOrderableDefaultValidator
     validates_with NotPropagateAllVariantsValidator
@@ -25,6 +26,11 @@ module Spree
     scope :reserved_items, -> { where(reserved_items: true) }
     scope :not_reserved_items, -> { where(reserved_items: false) }
 
+    # Note that this method assumes there's only one stock location for
+    # reserved items. This may change in future.
+    # An alternative architecture under consideration would be to have a
+    # separate reserved items stock location that shadows each regular stock
+    # location.
     def self.reserved_items_location
       return reserved_items.first if reserved_items.any?
       Spree::StockLocation.create(
@@ -41,6 +47,40 @@ module Spree
 
     def reserved_stock_items
       stock_items.where(type: Spree::ReservedStockItem)
+    end
+
+    # Overridden to add optional user_id argument
+    alias_method :original_stock_item, :stock_item
+    def stock_item(variant_id, user_id = nil)
+      return original_stock_item(variant_id) unless reserved_items?
+      raise(
+        Spree::StockLocation::UserRequiredArgumentError,
+        Spree.t(:user_id_required_for_reserved_stock_location)
+      ) unless user_id.present?
+      stock_items.where(variant_id: variant_id, user_id: user_id)
+                 .order(:id)
+                 .first
+    end
+
+    # Overridden to add optional user argument
+    alias_method :original_unstock, :unstock
+    def unstock(variant, quantity, originator = nil, user = nil)
+      return original_unstock(variant, quantity, originator = nil) unless reserved_items?
+      move(variant, -quantity, originator, user)
+    end
+
+    # Overridden to add optional user argument
+    alias_method :original_move, :move
+    def move(variant, quantity, originator = nil, user = nil)
+      return original_move(variant, quantity, originator = nil) unless reserved_items?
+      stock_item = stock_item(variant, user)
+      if quantity < 1 && !stock_item
+        raise InvalidMovementError, Spree.t(:negative_movement_absent_item)
+      end
+      stock_item.stock_movements.create!(
+        quantity: quantity,
+        originator: originator
+      )
     end
   end
 end
