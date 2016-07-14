@@ -45,27 +45,31 @@ module Spree
           InvalidQuantityError,
           Spree.t(:no_stock_reserved_for_user_and_variant)
         ) unless reserved_stock_item.present?
-        if quantity
+        reserved_count_on_hand = reserved_stock_item.count_on_hand
+        if quantity.present?
           if quantity < 1
-            raise InvalidQuantityError, Spree.t(:quantity_must_be_positive)
+            raise InvalidQuantityError,
+                  Spree.t(:quantity_must_be_positive)
           end
-          if quantity > reserved_stock_item.count_on_hand
-            raise InvalidQuantityError, Spree.t(:insufficient_reserved_stock_available)
+          if quantity > reserved_count_on_hand
+            raise InvalidQuantityError,
+                  Spree.t(:insufficient_reserved_stock_available)
           end
         end
-        quantity ||= reserved_stock_item.count_on_hand
+        quantity ||= reserved_count_on_hand
         perform_restock(reserved_stock_item, quantity)
       end
 
       def restock_expired
-        @reserved_stock_location.expired_stock_items.each do |reserved_stock_item|
-          perform_restock(reserved_stock_item, reserved_stock_item.count_on_hand)
+        @reserved_stock_location.expired_stock_items.each do |expired_item|
+          perform_restock(expired_item)
         end
       end
 
       private
 
-      def perform_restock(reserved_stock_item, quantity)
+      def perform_restock(reserved_stock_item, quantity = nil)
+        quantity ||= reserved_stock_item.count_on_hand
         variant = reserved_stock_item.variant
         user = reserved_stock_item.user
         original_stock_location = reserved_stock_item.original_stock_location
