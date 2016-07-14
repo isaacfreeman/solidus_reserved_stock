@@ -40,11 +40,7 @@ Spree.user_class.class_eval do
 
   def restock_all_reserved_items!
     reserved_stock_items.each do |reserved_stock_item|
-      Spree::Stock::Reserver.new.restock(
-        reserved_stock_item.variant,
-        self,
-        reserved_stock_item.original_stock_location
-      )
+      Spree::Stock::Reserver.new(reserved_stock_item.variant, self, reserved_stock_item.original_stock_location).restock
     end
   end
 end

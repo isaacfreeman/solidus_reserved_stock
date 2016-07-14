@@ -14,10 +14,7 @@ module Spree
 
         def reserve
           render_reserve_param_errors(params); return if performed?
-          @reserved_stock_item = Spree::Stock::Reserver.new.reserve(
-            variant,
-            original_stock_location,
-            user,
+          @reserved_stock_item = Spree::Stock::Reserver.new(variant, user, original_stock_location).reserve(
             params[:quantity],
             params[:expires_at]
           )
@@ -29,8 +26,8 @@ module Spree
         end
 
         def restock
-          @reserved_stock_item = Spree::Stock::Reserver.new.restock(
-            variant, user, original_stock_location, params[:quantity]
+          @reserved_stock_item = Spree::Stock::Reserver.new(variant, user, original_stock_location).restock(
+            params[:quantity]
           )
           respond_with(@reserved_stock_item, status: :created, default_template: :show)
         rescue => e

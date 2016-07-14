@@ -4,7 +4,10 @@ module Spree
     class Reserver
       class InvalidQuantityError < StandardError; end
 
-      def initialize(reserved_stock_location = nil)
+      def initialize(variant = nil, user = nil, original_stock_location = nil, reserved_stock_location = nil)
+        @variant = variant
+        @user = user
+        @original_stock_location = original_stock_location
         reserved_stock_location ||= Spree::StockLocation.reserved_items_location
         @reserved_stock_location = reserved_stock_location
       end
@@ -14,29 +17,29 @@ module Spree
       #       available
       # TODO: Raise suitable error if variant is nil (otherwise we get
       #       InvalidQuantityError)
-      def reserve(variant, original_stock_location, user, quantity, expires_at = nil)
+      def reserve(quantity, expires_at = nil)
         if quantity < 1 || quantity.blank?
           raise InvalidQuantityError, Spree.t(:quantity_must_be_positive)
         end
-        if quantity > original_stock_location.count_on_hand(variant)
+        if quantity > @original_stock_location.count_on_hand(@variant)
           raise InvalidQuantityError, Spree.t(:insufficient_stock_available)
         end
-        reserved_stock_item = user.reserved_stock_item_or_create(
-          variant,
-          original_stock_location,
+        reserved_stock_item = @user.reserved_stock_item_or_create(
+          @variant,
+          @original_stock_location,
           expires_at
         )
         reserved_stock_item.stock_movements.create!(quantity: quantity)
-        original_stock_location.unstock(variant, quantity)
+        @original_stock_location.unstock(@variant, quantity)
         reserved_stock_item
       end
 
       # TODO: Use stock transfers
       # TODO: Add locale files
-      def restock(variant, user, original_stock_location, quantity = nil)
-        reserved_stock_item = user.reserved_stock_item(
-          variant,
-          original_stock_location
+      def restock(quantity = nil)
+        reserved_stock_item = @user.reserved_stock_item(
+          @variant,
+          @original_stock_location
         )
         raise(
           InvalidQuantityError,

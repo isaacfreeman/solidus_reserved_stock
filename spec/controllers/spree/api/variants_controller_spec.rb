@@ -13,12 +13,7 @@ module Spree
       stub_authentication!
       stock_item = original_stock_location.stock_item_or_create(variant)
       stock_item.adjust_count_on_hand(10)
-      Spree::Stock::Reserver.new.reserve(
-        variant,
-        original_stock_location,
-        user,
-        4
-      )
+      Spree::Stock::Reserver.new(variant, user, original_stock_location).reserve(4)
     end
 
     context "as an admin" do

@@ -22,7 +22,7 @@ module Spree
         if validator.validate
           variant = Spree::Variant.find(permitted_resource_params[:variant_id])
           original_stock_location = Spree::StockLocation.find(permitted_resource_params[:original_stock_location_id])
-          @reserved_stock_item = Spree::Stock::Reserver.new.reserve(
+          @reserved_stock_item = Spree::Stock::Reserver.new(variant, @user, original_stock_location).reserve(
             variant,
             original_stock_location,
             @user,
@@ -42,7 +42,7 @@ module Spree
 
       def restock
         variant = Spree::ReservedStockItem.find(params[:id]).variant
-        Spree::Stock::Reserver.new.restock(variant, @user)
+        Spree::Stock::Reserver.new(variant, @user, original_stock_location).restock(variant, @user)
         flash[:success] = flash_message_for(@reserved_stock_item, :successfully_restocked)
         redirect_to admin_user_reserved_stock_items_path(@user)
       rescue => e
