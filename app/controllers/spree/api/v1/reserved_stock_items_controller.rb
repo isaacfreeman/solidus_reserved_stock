@@ -30,15 +30,11 @@ module Spree
             params[:quantity]
           )
           respond_with(@reserved_stock_item, status: :created, default_template: :show)
-        rescue => e
-          invalid_resource!(@reserved_stock_item)
         end
 
         def restock_expired
           Spree::Stock::Reserver.new.restock_expired
           head 204 # return success with no body
-        rescue => e
-          # TODO: error message
         end
 
         private
