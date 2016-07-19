@@ -26,6 +26,7 @@ module Spree
         end
 
         def restock
+          render_restock_param_errors(params); return if performed?
           @reserved_stock_item = Spree::Stock::Reserver.new(variant, user, original_stock_location).restock(
             params[:quantity]
           )
@@ -60,6 +61,11 @@ module Spree
 
         def render_reserve_param_errors(params)
           validator = Validators::ReserveStockParamsValidator.new(params)
+          render_errors(validator.errors) unless validator.validate
+        end
+
+        def render_restock_param_errors(params)
+          validator = Validators::RestockParamsValidator.new(params)
           render_errors(validator.errors) unless validator.validate
         end
 
