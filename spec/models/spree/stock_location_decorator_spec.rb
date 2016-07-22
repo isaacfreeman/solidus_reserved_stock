@@ -101,7 +101,7 @@ describe Spree::StockLocation, type: :model do
         it "raises an error" do
           expect do
             subject.stock_item(variant.id, nil, original_stock_location.id)
-          end.to raise_error Spree::StockLocation::UserRequiredArgumentError
+          end.to raise_error Spree::UserRequiredArgumentError
         end
       end
       context "when an original stock location argument is given" do
@@ -112,11 +112,12 @@ describe Spree::StockLocation, type: :model do
           expect(subject.stock_item(variant.id, user.id, original_stock_location.id)).to eq reserved_stock_item
         end
       end
-      context "when no orignal stock location argument is given" do
-        it "raises an error" do
-          expect do
-            subject.stock_item(variant.id, user.id, nil)
-          end.to raise_error Spree::StockLocation::OriginalStockLocationRequiredArgumentError
+      context "when no original stock location argument is given" do
+        it "returns the first reserved_stock_item it finds" do
+          other_original_stock_location_reserved_stock_item
+          reserved_stock_item
+          expect(first_stock_item).to eq other_original_stock_location_reserved_stock_item
+          expect(subject.stock_item(variant.id, user.id)).to eq first_stock_item
         end
       end
     end

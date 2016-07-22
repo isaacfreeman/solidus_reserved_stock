@@ -35,7 +35,6 @@ module Spree
       end
 
       # TODO: Use stock transfers
-      # TODO: Add locale files
       def restock(quantity = nil)
         reserved_stock_item = @user.reserved_stock_item(
           @variant,
