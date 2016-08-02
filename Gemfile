@@ -10,6 +10,10 @@ group :test do
   gem "database_cleaner"
 end
 
+group :development, :test do
+  gem "solidus_product_assembly", git: "https://github.com/resolve/solidus_product_assembly", branch: "v1.2"
+end
+
 gemspec
 
 if ENV["DB"] == "mysql"

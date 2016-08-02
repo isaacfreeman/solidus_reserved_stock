@@ -39,6 +39,7 @@ can be stored with an expiry date for the reservation.
   s.add_runtime_dependency "solidus_backend", "~> 1.2"
   s.add_runtime_dependency "deface", "~> 1.0"
 
+  s.add_development_dependency "awesome_print"
   s.add_development_dependency "byebug", "~> 8.2"
   s.add_development_dependency "capybara", "~> 2.4"
   s.add_development_dependency "coffee-rails", "~> 4.0"

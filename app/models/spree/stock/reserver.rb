@@ -24,14 +24,22 @@ module Spree
         if quantity > @original_stock_location.count_on_hand(@variant)
           raise InvalidQuantityError, Spree.t(:insufficient_stock_available)
         end
-        reserved_stock_item = @user.reserved_stock_item_or_create(
-          @variant,
-          @original_stock_location,
-          expires_at
-        )
-        reserved_stock_item.stock_movements.create!(quantity: quantity)
-        @original_stock_location.unstock(@variant, quantity)
-        reserved_stock_item
+        ActiveRecord::Base.transaction do
+          reserved_stock_item = @user.reserved_stock_item_or_create(
+            @variant,
+            @original_stock_location,
+            expires_at
+          )
+          reserved_stock_item.stock_movements.create!(quantity: quantity)
+          @original_stock_location.unstock(@variant, quantity)
+
+          if Gem::Specification.find_all_by_name('solidus_product_assembly').any?
+            @variant.product.parts.each do |part|
+              Spree::Stock::Reserver.new(part, @user, @original_stock_location, @reserved_stock_location).reserve(quantity, expires_at)
+            end
+          end
+          reserved_stock_item
+        end
       end
 
       # TODO: Use stock transfers
@@ -57,6 +65,13 @@ module Spree
         end
         quantity ||= reserved_count_on_hand
         perform_restock(reserved_stock_item, quantity)
+
+        if Gem::Specification.find_all_by_name('solidus_product_assembly').any?
+          @variant.product.parts.each do |part|
+            Spree::Stock::Reserver.new(part, @user, @original_stock_location, @reserved_stock_location).restock(quantity)
+          end
+        end
+        reserved_stock_item
       end
 
       def restock_expired
