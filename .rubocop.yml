@@ -19,3 +19,9 @@ Style/StringLiteralsInInterpolation:
   SupportedStyles:
     - single_quotes
     - double_quotes
+
+Style/DotPosition:
+  EnforcedStyle: trailing
+  SupportedStyles:
+    - leading
+    - trailing

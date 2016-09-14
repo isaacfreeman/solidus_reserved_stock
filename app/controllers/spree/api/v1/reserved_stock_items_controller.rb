@@ -8,7 +8,11 @@ module Spree
         rescue_from ActiveRecord::RecordNotFound, with: :not_found
 
         def index
-          @reserved_stock_items = scope.all.page(params[:page]).per(params[:per_page])
+          @reserved_stock_items = scope.
+                                  ransack(params[:q]).
+                                  result.
+                                  page(params[:page]).
+                                  per(params[:per_page])
           respond_with(@reserved_stock_items)
         end
 
