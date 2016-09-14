@@ -1,5 +1,8 @@
-= Version 0.0.4
+= Version 0.4.0
   * Ransack support in ReservedStockItemsController#index
+
+= Version 0.3.0
+  * Support for solidus_product_assembly
 
 = Version 0.0.2
   * Added CHANGELOG
