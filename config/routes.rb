@@ -1,4 +1,4 @@
-Spree::Core::Engine.add_routes do
+Spree::Core::Engine.routes.draw do
   namespace :admin do
     resources :reserved_stock_items, :except => [:show, :new, :edit]
     resources :users do

@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-gem "solidus", github: "solidusio/solidus", branch: "v1.2"
+gem "solidus", github: "solidusio/solidus", branch: "v2.0"
 
 group :development do
   gem "i18n-tasks"
@@ -11,7 +11,7 @@ group :test do
 end
 
 group :development, :test do
-  gem "solidus_product_assembly", git: "https://github.com/resolve/solidus_product_assembly", branch: "v1.2"
+  gem "solidus_product_assembly", "~> 1.0.0"
 end
 
 gemspec

@@ -1,3 +1,6 @@
+= Version 0.5.0
+  * Solidus 2.0
+
 = Version 0.4.0
   * Ransack support in ReservedStockItemsController#index
 

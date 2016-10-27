@@ -1,16 +1,14 @@
-Spree::Stock::Prioritizer.class_eval do
+module UseReservedStockLocationFirst
   private
 
-  # Use reserved_stock_location first
-  alias_method :original_sort_packages, :sort_packages
   def sort_packages
-    original_sort_packages
-
+    super
     reserved_stock_location = Spree::StockLocation.reserved_items_location
-    @packages = @packages
-                .partition do |package|
+    @packages = @packages.
+                partition do |package|
                   package.stock_location == reserved_stock_location
-                end
-                .flatten
+                end.
+                flatten
   end
 end
+Spree::Stock::Prioritizer.prepend UseReservedStockLocationFirst

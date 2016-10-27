@@ -12,7 +12,9 @@ describe Spree::StockLocation, type: :model do
         propagate_all_variants: false,
         reserved_items: true
       )
-      expect(Spree::StockLocation.reserved_items_location).to eq existing_reserved_stock_location
+      expect(
+        Spree::StockLocation.reserved_items_location
+      ).to eq existing_reserved_stock_location
     end
     it "creates reserved stock location if not present" do
       reserved_items_location = Spree::StockLocation.reserved_items_location
@@ -94,29 +96,37 @@ describe Spree::StockLocation, type: :model do
           other_user_reserved_stock_item
           reserved_stock_item
           expect(first_stock_item).to eq other_user_reserved_stock_item
-          expect(subject.stock_item(variant.id, user.id, original_stock_location.id)).to eq reserved_stock_item
+          expect(
+            subject.stock_item(variant.id, user.id, original_stock_location.id)
+          ).to eq reserved_stock_item
         end
       end
       context "when no user argument is given" do
         it "raises an error" do
           expect do
             subject.stock_item(variant.id, nil, original_stock_location.id)
-          end.to raise_error Spree::UserRequiredArgumentError
+          end.to raise_error Spree::StockLocation::UserRequiredArgumentError
         end
       end
       context "when an original stock location argument is given" do
         it "returns the reserved_stock_item for the given original_stock_location" do
           other_original_stock_location_reserved_stock_item
           reserved_stock_item
-          expect(first_stock_item).to eq other_original_stock_location_reserved_stock_item
-          expect(subject.stock_item(variant.id, user.id, original_stock_location.id)).to eq reserved_stock_item
+          expect(
+            first_stock_item
+          ).to eq other_original_stock_location_reserved_stock_item
+          expect(
+            subject.stock_item(variant.id, user.id, original_stock_location.id)
+          ).to eq reserved_stock_item
         end
       end
       context "when no original stock location argument is given" do
         it "returns the first reserved_stock_item it finds" do
           other_original_stock_location_reserved_stock_item
           reserved_stock_item
-          expect(first_stock_item).to eq other_original_stock_location_reserved_stock_item
+          expect(
+            first_stock_item
+          ).to eq other_original_stock_location_reserved_stock_item
           expect(subject.stock_item(variant.id, user.id)).to eq first_stock_item
         end
       end

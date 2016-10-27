@@ -1,6 +1,5 @@
 require "spec_helper"
 
-
 describe Spree.user_class, type: :model do
   subject { create(:user) }
   let(:original_stock_location) { create(:stock_location) }
@@ -58,15 +57,25 @@ describe Spree.user_class, type: :model do
     it "returns a reserved_stock_item for the given original_stock_location" do
       other_reserved_stock_item_for_same_variant
       reserved_stock_item
-      expect(reserved_stock_location.stock_items.first).to eq other_reserved_stock_item_for_same_variant
+      expect(reserved_stock_location.stock_items.first).to eq(
+        other_reserved_stock_item_for_same_variant
+      )
       expect(
         subject.reserved_stock_item_or_create(variant, original_stock_location)
       ).to eq reserved_stock_item
     end
     it "creates and returns a reserved_stock_item if none exists" do
-      expect(subject.reserved_stock_item(variant, original_stock_location)).to be_nil
-      subject.reserved_stock_item_or_create(variant, original_stock_location, 1.week.from_now)
-      expect(subject.reserved_stock_item(variant, original_stock_location)).not_to be_nil
+      expect(
+        subject.reserved_stock_item(variant, original_stock_location)
+      ).to be_nil
+      subject.reserved_stock_item_or_create(
+        variant,
+        original_stock_location,
+        1.week.from_now
+      )
+      expect(
+        subject.reserved_stock_item(variant, original_stock_location)
+      ).not_to be_nil
     end
   end
 
