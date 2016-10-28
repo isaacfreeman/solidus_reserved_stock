@@ -1,7 +1,8 @@
 require "spec_helper"
 
 describe Spree::Stock::Coordinator, type: :model do
-  # Force setting up a normal stock lcoation before we create variant,
+  let!(:store) { create(:store, default: true) }
+  # Force setting up a normal stock location before we create variant,
   # otherwise we get too many stock locations
   let!(:normal_stock_location) { create(:stock_location) }
   let(:variant) { create(:variant) }
@@ -31,7 +32,7 @@ describe Spree::Stock::Coordinator, type: :model do
       variant: variant
     )
   end
-  let(:order) { Spree::Order.new(user: user) }
+  let(:order) { Spree::Order.new(store: store, user: user) }
   subject { Spree::Stock::Coordinator.new(order) }
 
   context "#packages" do
@@ -39,7 +40,7 @@ describe Spree::Stock::Coordinator, type: :model do
       reserved_stock_item_for_user.set_count_on_hand(5)
       normal_stock_item.set_count_on_hand(5)
       Spree::OrderContents.new(order).add(variant, 2)
-      packages = subject.packages
+      packages = subject.send(:packages)
       expect(packages.count).to eq 1
       expect(packages.first.stock_location).to eq reserved_stock_location
       expect(packages.first.contents.count).to eq 2
@@ -48,7 +49,7 @@ describe Spree::Stock::Coordinator, type: :model do
       reserved_stock_item_for_user.set_count_on_hand(5)
       normal_stock_item.set_count_on_hand(5)
       Spree::OrderContents.new(order).add(variant, 7)
-      packages = subject.packages
+      packages = subject.send(:packages)
       expect(packages.count).to eq 2
       expect(packages.first.stock_location).to eq reserved_stock_location
       expect(packages.first.contents.count).to eq 5
@@ -59,7 +60,7 @@ describe Spree::Stock::Coordinator, type: :model do
       reserved_stock_item_for_other_user.set_count_on_hand(5)
       normal_stock_item.set_count_on_hand(5)
       Spree::OrderContents.new(order).add(variant, 2)
-      packages = subject.packages
+      packages = subject.send(:packages)
       expect(packages.count).to eq 1
       expect(packages.first.stock_location).to eq normal_stock_location
       expect(packages.first.contents.count).to eq 2

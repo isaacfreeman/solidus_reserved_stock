@@ -18,9 +18,10 @@ module Spree
 
         def reserve
           render_reserve_param_errors(params); return if performed?
+          expires_at = params[:expires_at].present? ? Time.zone.parse(params[:expires_at]) : nil
           @reserved_stock_item = Spree::Stock::Reserver.new(variant, user, original_stock_location).reserve(
-            params[:quantity],
-            params[:expires_at]
+            params[:quantity].to_i,
+            expires_at
           )
           if @reserved_stock_item.present?
             respond_with(@reserved_stock_item, status: :created, default_template: :show)
@@ -31,8 +32,9 @@ module Spree
 
         def restock
           render_restock_param_errors(params); return if performed?
+          quantity = params[:quantity].present? ? params[:quantity].to_i : nil
           @reserved_stock_item = Spree::Stock::Reserver.new(variant, user, original_stock_location).restock(
-            params[:quantity]
+            quantity
           )
           respond_with(@reserved_stock_item, status: :created, default_template: :show)
         end

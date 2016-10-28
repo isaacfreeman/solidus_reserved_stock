@@ -94,7 +94,7 @@ module Spree
             stock_item.adjust_count_on_hand(10)
           end
           it "reserves a quantity of stock for a given variant" do
-            expiry_date = 1.week.from_now
+            expiry_date = 1.week.from_now.iso8601(3)
             api_post :reserve,
                      variant_id: variant.id,
                      original_stock_location_id: original_stock_location.id,
@@ -103,7 +103,7 @@ module Spree
                      expires_at: expiry_date
             expect(response.status).to eq 201
             expect(json_response[:count_on_hand]).to eq 4
-            expect(json_response[:expires_at]).to eq expiry_date.iso8601(3)
+            expect(json_response[:expires_at]).to eq expiry_date
           end
           it "can find variants by sku" do
             api_post :reserve,

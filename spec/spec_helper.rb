@@ -49,6 +49,11 @@ RSpec.configure do |config|
     reset_spree_preferences
     Spree::Api::Config.requires_authentication = true
   end
+
+  config.include VersionCake::TestHelpers, type: :controller
+  config.before(:each, type: :controller) do
+    set_request_version("", 1)
+  end
 end
 
 Dir[File.join(File.dirname(__FILE__), "/support/**/*.rb")].each do |file|
